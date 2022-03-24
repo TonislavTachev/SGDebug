@@ -75,7 +75,7 @@ const DataWrapper = () => {
 const useStyles = makeStyles((theme) => ({
     wrapperContainer: {
         display: 'flex',
-        flex: '3',
+        flex: '4',
         flexDirection: 'row',
         background: '#f4f4f4',
         height: '100%',

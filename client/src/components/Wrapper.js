@@ -2,7 +2,6 @@ import React from 'react';
 import { makeStyles } from '@mui/styles';
 import Sidebar from './SidebarComponents/Sidebar';
 import DataWrapper from './DataVisualizationComponents/DataWrapper';
-import Container from '@mui/material/Container';
 const Wrapper = () => {
     const classes = useStyles();
 

@@ -47,7 +47,8 @@ const useStyles = makeStyles((theme) => ({
         width: '450px',
         height: '105px',
         borderRadius: '16px',
-        marginBottom: '16px'
+        marginBottom: '16px',
+        backgroundColor: '#FFF'
     },
     timeAndDateWrapper: {
         background: '#7eccff',

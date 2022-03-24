@@ -1,9 +1,17 @@
+import Wrapper from './components/Wrapper';
+import { ThemeProvider as MuiThemeProvider } from '@mui/styles';
+import SgDebugTheme from './setup/sgDebugTheme';
+import { Provider } from 'react-redux';
+import Store from './setup/store';
+
 function App() {
-  return (
-    <div className="App">
-      hello
-    </div>
-  );
+    return (
+        <Provider store={Store}>
+            <MuiThemeProvider theme={SgDebugTheme}>
+                <Wrapper />
+            </MuiThemeProvider>
+        </Provider>
+    );
 }
 
 export default App;

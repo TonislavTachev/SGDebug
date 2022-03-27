@@ -2,6 +2,7 @@ import React from 'react';
 import { makeStyles } from '@mui/styles';
 import EndpointItem from './EndpointItem';
 import { Typography } from '@mui/material';
+import BodyDetailsComponent from './BodyDetailsComponent';
 
 const DataWrapper = () => {
     const items = [
@@ -67,6 +68,7 @@ const DataWrapper = () => {
                 >
                     Details
                 </Typography>
+                <BodyDetailsComponent />
             </div>
         </div>
     );
@@ -86,7 +88,9 @@ const useStyles = makeStyles((theme) => ({
         flexDirection: 'column'
     },
     detailsContainer: {
-        marginLeft: '30px'
+        marginLeft: '30px',
+        marginRight: '30px',
+        width: '100%'
     }
 }));
 

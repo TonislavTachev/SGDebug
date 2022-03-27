@@ -1,22 +1,27 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Typography } from '@mui/material';
 import { makeStyles } from '@mui/styles';
 import HighlightOffIcon from '@mui/icons-material/HighlightOff';
 import FileIcon from '../../assets/icons/file.png';
 import LinearProgress from '@mui/material/LinearProgress';
+import Tooltip, { TooltipProps, tooltipClasses } from '@mui/material/Tooltip';
 
 const FileItem = ({ fileName }) => {
     const classes = useStyles();
+
+    const [isHovered, setIsHoveredOver] = useState(false);
 
     return (
         <div className={classes.fileWrapper}>
             <div className={classes.iconWrapper}>
                 <img src={FileIcon} alt='File icon' className={classes.icon} />
             </div>
-            <div className={classes.progressAndName}>
-                <Typography>{fileName}</Typography>
-                <LinearProgress value={50} />
-            </div>
+            <Tooltip title={fileName}>
+                <div className={classes.progressAndName}>
+                    <Typography>{fileName}</Typography>
+                    <LinearProgress value={50} />
+                </div>
+            </Tooltip>
             <div className={classes.removeItem}>
                 <HighlightOffIcon />
             </div>

@@ -2,14 +2,22 @@ import React from 'react';
 import { makeStyles } from '@mui/styles';
 import EventIcon from '@mui/icons-material/Event';
 import AccessTimeIcon from '@mui/icons-material/AccessTime';
+import ErrorIcon from '../../assets/icons/error.png';
 import { Typography } from '@mui/material';
 
-const EndpointItem = ({ time, date, endpointName, endpointType }) => {
+const EndpointItem = ({ time, date, endpointName, endpointType, isError }) => {
     const classes = useStyles();
 
     return (
-        <div className={classes.endpointWrapper}>
-            <div className={classes.timeAndDateWrapper}>
+        <div
+            className={classes.endpointWrapper}
+            style={isError ? { border: '1px solid #ff2626' } : {}}
+        >
+            {isError && <img src={ErrorIcon} className={classes.errorIcon} />}
+            <div
+                className={classes.timeAndDateWrapper}
+                style={isError ? { background: 'rgb(255 38 38 / 50%)', color: '#FFF' } : {}}
+            >
                 <div className={classes.timeWrapper}>
                     <AccessTimeIcon className={classes.icon} />
                     <Typography sx={{ marginTop: '5px', marginLeft: '5px', fontWeight: 600 }}>
@@ -48,7 +56,8 @@ const useStyles = makeStyles((theme) => ({
         height: '105px',
         borderRadius: '16px',
         marginBottom: '16px',
-        backgroundColor: '#FFF'
+        backgroundColor: '#FFF',
+        position: 'relative'
     },
     timeAndDateWrapper: {
         background: '#7eccff',
@@ -75,6 +84,12 @@ const useStyles = makeStyles((theme) => ({
         display: 'flex',
         flexDirection: 'column',
         paddingLeft: '5px'
+    },
+    errorIcon: {
+        position: 'absolute',
+        right: '-10px',
+        top: '-9px',
+        height: '22px'
     }
 }));
 

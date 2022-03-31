@@ -1,0 +1,2 @@
+export const UPLOAD_FILES = 'UPLOAD_FILES';
+export const FETCH_REQUEST = 'FETCH_REQUEST';

@@ -3,11 +3,11 @@ import { makeStyles } from '@mui/styles';
 import UploadIcon from '../../assets/icons/upload.png';
 import { Typography } from '@mui/material';
 
-const UploadFileComponent = () => {
+const UploadFileComponent = ({ openFileUploadModal }) => {
     const classes = useStyles();
 
     return (
-        <div className={classes.wrapperContainer}>
+        <div className={classes.wrapperContainer} onClick={openFileUploadModal}>
             <div className={classes.openFileUploadWrapper}>
                 <div className={classes.fileUploadText}>
                     <Typography sx={{ marginLeft: '-8px ', marginBottom: '10px', fontWeight: 600 }}>

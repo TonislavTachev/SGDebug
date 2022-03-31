@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { makeStyles } from '@mui/styles';
 import SGLogo from '../../assets/logo/download.png';
 import { Typography } from '@mui/material';
@@ -6,15 +6,28 @@ import UploadFileComponent from './UploadFileComponent';
 import SGCalendar from './SGCalendar';
 import TimeComponent from './TimeComponent';
 import FileItem from './FileItem';
+import SGModal from '../SGComponents/SGModal';
+import FileUpload from '../SGComponents/FileUpload';
+import { useDispatch, useSelector } from 'react-redux';
+import { uploadFiles } from '../../actions/actions';
 
 const Sidebar = () => {
     const classes = useStyles();
+    const [selectedFiles, setSelectedFile] = useState([]);
+    const [isModalOpen, setModalOpen] = useState(false);
 
-    const items = [
-        { fileName: 'impl-in..202121.txt' },
-        { fileName: 'impl-in..202121.txt' },
-        { fileName: 'impl-in..202121.txt' }
-    ];
+    const dispatch = useDispatch();
+
+    const openFileUploadModal = () => {
+        setModalOpen(true);
+    };
+
+    const handleFileChange = async (event) => {
+        let data = new FormData();
+        data.append('file', event.target.files[0]);
+
+        dispatch(uploadFiles(data));
+    };
 
     return (
         <div className={classes.wrapperContainer}>
@@ -27,7 +40,7 @@ const Sidebar = () => {
                 </div>
             </div>
             <div className={classes.uploadWrapper}>
-                <UploadFileComponent />
+                <UploadFileComponent openFileUploadModal={openFileUploadModal} />
             </div>
             <div className={classes.dateWrapper}>
                 <Typography
@@ -56,11 +69,18 @@ const Sidebar = () => {
                     Uploaded log files
                 </Typography>
                 <div className={classes.uploadedFilesWrapper}>
-                    {items.map((item, index) => {
+                    {selectedFiles.map((item, index) => {
                         return <FileItem fileName={item.fileName} />;
                     })}
                 </div>
             </div>
+            {isModalOpen && (
+                <SGModal
+                    open={isModalOpen}
+                    handleClose={() => setModalOpen(false)}
+                    dialogContent={<FileUpload handleFileChange={handleFileChange} />}
+                />
+            )}
         </div>
     );
 };

@@ -1,8 +1,10 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { makeStyles } from '@mui/styles';
 import EndpointItem from './EndpointItem';
 import { Typography } from '@mui/material';
 import BodyDetailsComponent from './BodyDetailsComponent';
+import { fetchAllRequests } from '../../actions/actions';
+import { useDispatch, useSelector } from 'react-redux';
 
 const DataWrapper = () => {
     const items = [
@@ -16,7 +18,8 @@ const DataWrapper = () => {
             time: '11:35',
             date: '11.02',
             endpointName: 'insurance.person.lookup',
-            endpointType: 'impl-generali'
+            endpointType: 'impl-generali',
+            isError: true
         },
         {
             time: '11:55',
@@ -32,7 +35,16 @@ const DataWrapper = () => {
         }
     ];
 
+    const dispatch = useDispatch();
+
+    useEffect(() => {
+        dispatch(fetchAllRequests());
+    }, []);
+
     const classes = useStyles();
+
+    const fetchedRequests = useSelector(({ requestReducer }) => requestReducer.get('requests'));
+
     return (
         <div className={classes.wrapperContainer}>
             <div className={classes.endpointContainer}>
@@ -53,6 +65,7 @@ const DataWrapper = () => {
                             time={item.time}
                             date={item.date}
                             endpointType={item.endpointType}
+                            isError={item.isError}
                         />
                     );
                 })}

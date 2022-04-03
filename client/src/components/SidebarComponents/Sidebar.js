@@ -11,12 +11,14 @@ import FileUpload from '../SGComponents/FileUpload';
 import { useDispatch, useSelector } from 'react-redux';
 import { uploadFiles } from '../../actions/actions';
 
-const Sidebar = () => {
+const Sidebar = ({ setLoading }) => {
     const classes = useStyles();
     const [selectedFiles, setSelectedFile] = useState([]);
     const [isModalOpen, setModalOpen] = useState(false);
 
     const dispatch = useDispatch();
+
+    const uploadedFiles = useSelector(({ fileReducer }) => fileReducer.get('uploadedFiles'));
 
     const openFileUploadModal = () => {
         setModalOpen(true);
@@ -69,7 +71,7 @@ const Sidebar = () => {
                     Uploaded log files
                 </Typography>
                 <div className={classes.uploadedFilesWrapper}>
-                    {selectedFiles.map((item, index) => {
+                    {uploadedFiles.map((item, index) => {
                         return <FileItem fileName={item.fileName} />;
                     })}
                 </div>

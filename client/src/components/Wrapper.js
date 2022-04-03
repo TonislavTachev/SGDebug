@@ -21,7 +21,7 @@ const useStyles = makeStyles((theme) => ({
         display: 'flex !important',
         justifyContent: 'space-between',
         flexDirection: 'row',
-        height: '94vh !important',
+        // height: '94vh !important',
         paddingLeft: '10px !important',
         paddingRight: '10px !important'
     }

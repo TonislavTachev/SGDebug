@@ -17,19 +17,45 @@ app.use(cors({ credentials: true, origin: true }));
 
 app.post('/upload', upload.single('file'), async (req, res) => {
     const uploadedFile = req.file;
-    // createAndReadFile(uploadedFile.path);
+    createAndReadFile(uploadedFile.path, uploadedFile.originalname);
     res.json({ msg: uploadedFile.originalname });
 });
 
-app.get('/fetchRequests', async (req, res) => {
+app.post('/fetchRequests', async (req, res) => {
     try {
+        let { perPage, pageNumber } = req.body;
+
+        var pagination = {
+            limit: perPage,
+            skip: perPage * (pageNumber - 1)
+        };
+
         let data = await Request.aggregate([
             { $match: { mtid: 'request' } },
-            { $sample: { size: 10 } }
+            {
+                $facet: {
+                    data: [{ $skip: pagination.skip }, { $limit: pagination.limit }]
+                }
+            }
         ]);
-        res.json({ data: data, length: data.length });
+
+        res.json({ data: data[0].data });
     } catch (error) {
-        res.status(500).json(error);
+        res.status(500);
+    }
+});
+
+app.get('/fetchRequests/:id', async (req, res) => {
+    try {
+        let foundRequest = await Request.findById(req.params.id);
+
+        if (!foundRequest) {
+            return res.json(404).json({ msg: 'Request not found' });
+        }
+
+        res.json(foundRequest).status(200);
+    } catch (error) {
+        res.json(error).status(500);
     }
 });
 

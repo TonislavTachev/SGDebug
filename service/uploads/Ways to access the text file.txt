@@ -1,0 +1,9 @@
+how to find stuff in the log files:
+statusCode: 400 - error
+statusMessage: Bad Request
+httpMethod
+methodCaller
+
+ to get the method name -> httpMethod, path
+ or
+ actionId/action

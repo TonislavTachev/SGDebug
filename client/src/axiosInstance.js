@@ -5,4 +5,15 @@ const instance = axios.create({
     headers: { 'Content-Type': 'multipart/form-data' }
 });
 
+const pagination = {
+    perPage: 1,
+    pageNumber: 10
+};
+
+// instance.interceptors.request.use((config) => {
+//     config.params = config.params || {};
+//     config.params['pagination'] = pagination;
+//     return config;
+// });
+
 export default instance;

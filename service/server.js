@@ -41,7 +41,7 @@ app.post('/fetchRequests', async (req, res) => {
 
         res.json({ data: data[0].data });
     } catch (error) {
-        res.status(500).json({ errorMessage: error });
+        res.status(500);
     }
 });
 

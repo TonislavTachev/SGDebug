@@ -14,8 +14,13 @@ export const uploadFiles = (files) => async (dispatch) => {
 };
 
 export const fetchAllRequests = () => async (dispatch) => {
+    const pagination = {
+        perPage: 10,
+        pageNumber: 50
+    };
+
     try {
-        let res = await API.get('/fetchRequests', {
+        let res = await API.post('/fetchRequests', pagination, {
             headers: {
                 'Content-Type': 'application/json'
             }

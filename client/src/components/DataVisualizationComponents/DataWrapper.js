@@ -1,40 +1,12 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { makeStyles } from '@mui/styles';
 import EndpointItem from './EndpointItem';
 import { Typography } from '@mui/material';
 import BodyDetailsComponent from './BodyDetailsComponent';
-import { fetchAllRequests } from '../../actions/actions';
+import { fetchAllRequests, getRequest } from '../../actions/actions';
 import { useDispatch, useSelector } from 'react-redux';
 
 const DataWrapper = () => {
-    const items = [
-        {
-            time: '11:11',
-            date: '11.02',
-            endpointName: 'insurance.customer.updateStatus',
-            endpointType: 'impl-generali-insurance'
-        },
-        {
-            time: '11:35',
-            date: '11.02',
-            endpointName: 'insurance.person.lookup',
-            endpointType: 'impl-generali',
-            isError: true
-        },
-        {
-            time: '11:55',
-            date: '11.02',
-            endpointName: 'insurance.policy.get',
-            endpointType: 'impl-generali-insurance'
-        },
-        {
-            time: '14:30',
-            date: '11.02',
-            endpointName: 'insurance.customer.login',
-            endpointType: 'impl-generali-insurance'
-        }
-    ];
-
     const dispatch = useDispatch();
 
     useEffect(() => {
@@ -44,6 +16,18 @@ const DataWrapper = () => {
     const classes = useStyles();
 
     const fetchedRequests = useSelector(({ requestReducer }) => requestReducer.get('requests'));
+
+    const [selectedRequest, setSelectedRequest] = useState();
+    const [openBody, setBodyOpenState] = useState(false);
+
+    if (fetchedRequests.length === 0) {
+        return 'Loading';
+    }
+
+    const fetchRequestAndExpandBody = (id) => {
+        let individualRequest = fetchedRequests[id];
+        dispatch(getRequest(individualRequest));
+    };
 
     return (
         <div className={classes.wrapperContainer}>
@@ -58,17 +42,25 @@ const DataWrapper = () => {
                 >
                     Requests
                 </Typography>
-                {items.map((item, index) => {
-                    return (
-                        <EndpointItem
-                            endpointName={item.endpointName}
-                            time={item.time}
-                            date={item.date}
-                            endpointType={item.endpointType}
-                            isError={item.isError}
-                        />
-                    );
-                })}
+                {fetchedRequests.length > 0 &&
+                    fetchedRequests.map((item, index) => {
+                        return (
+                            <EndpointItem
+                                endpointName={
+                                    item.body.hasOwnProperty('method')
+                                        ? item.body.method
+                                        : 'No method name'
+                                }
+                                key={`${item._id}-${index}`}
+                                requestIndex={index}
+                                time={item.time}
+                                date={item.date}
+                                endpointType={'impl-generali-insurance'}
+                                isError={item.isError}
+                                fetchRequestAndExpandBody={fetchRequestAndExpandBody}
+                            />
+                        );
+                    })}
             </div>
             <div className={classes.detailsContainer}>
                 <Typography
@@ -81,7 +73,7 @@ const DataWrapper = () => {
                 >
                     Details
                 </Typography>
-                <BodyDetailsComponent />
+                <BodyDetailsComponent isBodyOpened={openBody} />
             </div>
         </div>
     );

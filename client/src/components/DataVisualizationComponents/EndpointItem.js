@@ -4,16 +4,40 @@ import EventIcon from '@mui/icons-material/Event';
 import AccessTimeIcon from '@mui/icons-material/AccessTime';
 import ErrorIcon from '../../assets/icons/error.png';
 import { Typography } from '@mui/material';
+import { format, parseISO } from 'date-fns';
+import { DATE_FORMAT, TIME_FORMAT } from '../../constants';
 
-const EndpointItem = ({ time, date, endpointName, endpointType, isError }) => {
+const EndpointItem = ({
+    time,
+    endpointName,
+    endpointType,
+    isError,
+    requestIndex,
+    fetchRequestAndExpandBody
+}) => {
     const classes = useStyles();
+
+    const formatTime = (timeToFormat) => {
+        return `${format(new Date(timeToFormat), TIME_FORMAT)}`;
+    };
+
+    const formatDate = (dateToFormat) => {
+        return `${format(new Date(dateToFormat), DATE_FORMAT)}`;
+    };
 
     return (
         <div
             className={classes.endpointWrapper}
             style={isError ? { border: '1px solid #ff2626' } : {}}
+            onClick={() => fetchRequestAndExpandBody(requestIndex)}
         >
-            {isError && <img src={ErrorIcon} className={classes.errorIcon} />}
+            {isError && (
+                <img
+                    src={ErrorIcon}
+                    className={classes.errorIcon}
+                    alt='Icon indicating the request was an error'
+                />
+            )}
             <div
                 className={classes.timeAndDateWrapper}
                 style={isError ? { background: 'rgb(255 38 38 / 50%)', color: '#FFF' } : {}}
@@ -21,13 +45,13 @@ const EndpointItem = ({ time, date, endpointName, endpointType, isError }) => {
                 <div className={classes.timeWrapper}>
                     <AccessTimeIcon className={classes.icon} />
                     <Typography sx={{ marginTop: '5px', marginLeft: '5px', fontWeight: 600 }}>
-                        {time}
+                        {formatTime(time)}
                     </Typography>
                 </div>
                 <div className={classes.dateWrapper}>
                     <EventIcon className={classes.icon} />
                     <Typography sx={{ marginTop: '5px', marginLeft: '5px', fontWeight: 600 }}>
-                        {date}
+                        {formatDate(time)}
                     </Typography>
                 </div>
             </div>
@@ -57,7 +81,8 @@ const useStyles = makeStyles((theme) => ({
         borderRadius: '16px',
         marginBottom: '16px',
         backgroundColor: '#FFF',
-        position: 'relative'
+        position: 'relative',
+        cursor: 'pointer'
     },
     timeAndDateWrapper: {
         background: '#7eccff',

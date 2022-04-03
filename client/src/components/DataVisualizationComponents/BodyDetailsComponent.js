@@ -5,11 +5,11 @@ import { makeStyles } from '@mui/styles';
 import { Fade, Typography, Zoom } from '@mui/material';
 import IconButton from '@mui/material/IconButton';
 
-const BodyDetailsComponent = () => {
+const BodyDetailsComponent = ({ isBodyOpened }) => {
     const classes = useStyles();
     const headerRef = useRef(null);
 
-    const [isOpen, setOpen] = useState(false);
+    const [isOpen, setOpen] = useState(isBodyOpened);
 
     var data = {
         employees: [

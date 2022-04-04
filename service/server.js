@@ -32,14 +32,21 @@ app.post('/fetchRequests', async (req, res) => {
 
         let data = await Request.aggregate([
             { $match: { mtid: 'request' } },
+            { $sort: { time: 1 } },
             {
                 $facet: {
-                    data: [{ $skip: pagination.skip }, { $limit: pagination.limit }]
+                    data: [{ $skip: pagination.skip }, { $limit: pagination.limit }],
+                    startDate: [{ $sort: { time: 1 } }, { $limit: 1 }],
+                    endDate: [{ $sort: { time: -1 } }, { $limit: 1 }]
                 }
             }
         ]);
 
-        res.json({ data: data[0].data });
+        res.json({
+            data: data[0].data,
+            startDate: data[0].startDate[0].time,
+            endDate: data[0].endDate[0].time
+        });
     } catch (error) {
         res.status(500);
     }

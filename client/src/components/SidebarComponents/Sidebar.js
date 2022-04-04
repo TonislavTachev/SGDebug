@@ -49,7 +49,6 @@ const Sidebar = ({ setLoading }) => {
                     sx={{
                         textAlign: 'center',
                         marginTop: '10px',
-                        marginBottom: '15px',
                         fontWeight: 600
                     }}
                 >

@@ -1,4 +1,4 @@
-import { UPLOAD_FILES, FETCH_REQUEST, GET_REQUEST } from '../actionTypes';
+import { UPLOAD_FILES, FETCH_REQUEST, GET_REQUEST, SET_FIELD } from '../actionTypes';
 import API from '../axiosInstance';
 
 export const uploadFiles = (files) => async (dispatch) => {
@@ -16,7 +16,7 @@ export const uploadFiles = (files) => async (dispatch) => {
 export const fetchAllRequests = () => async (dispatch) => {
     const pagination = {
         perPage: 10,
-        pageNumber: 50
+        pageNumber: 1
     };
 
     try {
@@ -26,10 +26,16 @@ export const fetchAllRequests = () => async (dispatch) => {
             }
         });
 
-        dispatch({ type: FETCH_REQUEST, payload: res.data.data });
+        dispatch({ type: FETCH_REQUEST, payload: res.data });
     } catch (error) {}
 };
 
+export const filterRequests = () => async (dispatch) => {};
+
+export const setField = (body) => (dispatch) => {
+    console.log(body);
+    dispatch({ type: SET_FIELD, payload: body });
+};
 export const getRequest = (request) => async (dispatch) => {
     dispatch({ type: GET_REQUEST, payload: request });
 };

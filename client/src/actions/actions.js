@@ -30,10 +30,23 @@ export const fetchAllRequests = () => async (dispatch) => {
     } catch (error) {}
 };
 
-export const filterRequests = () => async (dispatch) => {};
+export const filterRequests = (filters) => async (dispatch) => {
+    const filtersObj = {
+        perPage: 10,
+        pageNumber: 1,
+        filters
+    };
+
+    try {
+        let res = await API.post('/filterRequests', filtersObj, {
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        });
+    } catch (error) {}
+};
 
 export const setField = (body) => (dispatch) => {
-    console.log(body);
     dispatch({ type: SET_FIELD, payload: body });
 };
 export const getRequest = (request) => async (dispatch) => {

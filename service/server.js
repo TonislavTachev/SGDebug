@@ -1,7 +1,7 @@
 const express = require('express');
 const app = express();
 const multer = require('multer');
-const { createAndReadFile, multerStorage } = require('./helpers');
+const { createAndReadFile, multerStorage, buildSearchParams } = require('./helpers');
 const upload = multer({ storage: multerStorage });
 const { Connection } = require('./MongoConnection');
 require('dotenv').config({ path: __dirname + '/.env' });
@@ -42,12 +42,48 @@ app.post('/fetchRequests', async (req, res) => {
             }
         ]);
 
+        // let converted = await Request.aggregate([
+        //     {
+        //         $project: {
+        //             meta: {
+        //                 $getField: {
+        //                     field: { $literal: '$meta' },
+        //                     input: '$$ROOT'
+        //                 }
+        //             },
+        //             doc: '$$ROOT',
+        //             time: {
+        //                 $toDate: '$time'
+        //             }
+        //         }
+        //     },
+
+        //     {
+        //         $group: {
+        //             _id: '$meta.trace',
+        //             count: { $count: {} },
+        //             requests: {
+        //                 $push: '$doc'
+        //             }
+        //         }
+        //     },
+        //
+        //     {
+        //         $facet: {
+        //             data: [{ $skip: pagination.skip }, { $limit: pagination.limit }],
+        //             startDate: [{ $sort: { time: 1 } }, { $limit: 1 }],
+        //             endDate: [{ $sort: { time: -1 } }, { $limit: 1 }]
+        //         }
+        //     }
+        // ]);
+
         res.json({
             data: data[0].data,
             startDate: data[0].startDate[0].time,
             endDate: data[0].endDate[0].time
         });
     } catch (error) {
+        console.log(error);
         res.status(500);
     }
 });
@@ -63,6 +99,34 @@ app.get('/fetchRequests/:id', async (req, res) => {
         res.json(foundRequest).status(200);
     } catch (error) {
         res.json(error).status(500);
+    }
+});
+
+app.post('/filterRequests', async (req, res) => {
+    let { perPage, pageNumber, filters } = req.body;
+
+    var pagination = {
+        limit: perPage,
+        skip: perPage * (pageNumber - 1)
+    };
+
+    let dateAndTimeRange = buildSearchParams(filters);
+
+    try {
+        let filteredRequests = await Request.aggregate([
+            {
+                $match: {
+                    $and: [
+                        { time: { $gte: ISODate(`${dateAndTimeRange[0]}`) } },
+                        { time: { $lte: ISODate(`${dateAndTimeRange[1]}`) } }
+                    ]
+                }
+            }
+        ]);
+
+        res.status(200).json(filteredRequests);
+    } catch (error) {
+        res.json(error);
     }
 });
 

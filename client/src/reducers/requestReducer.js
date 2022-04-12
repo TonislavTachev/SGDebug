@@ -7,8 +7,11 @@ const defaultState = fromJS({
     startDate: null,
     endDate: null,
     filters: {
-        range: {},
-        time: {}
+        range: [null, null],
+        time: {
+            from: '',
+            to: ''
+        }
     }
 });
 

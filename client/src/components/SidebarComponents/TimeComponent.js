@@ -1,14 +1,58 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { TextField, Typography } from '@mui/material';
 import { makeStyles } from '@mui/styles';
 import TimePicker from '@mui/lab/TimePicker';
 import AdapterDateFns from '@mui/lab/AdapterDateFns';
 import LocalizationProvider from '@mui/lab/LocalizationProvider';
+import { useSelector, useDispatch } from 'react-redux';
+import { setField } from '../../actions/actions';
+import { format } from 'date-fns';
+import { TIME_FORMAT } from '../../constants';
 
 const TimeComponent = () => {
     const classes = useStyles();
 
-    const [value, setValue] = useState(new Date());
+    const timeRangeFilter = useSelector(({ requestReducer }) => requestReducer.get('filters'));
+    const [isDateSelected, setSelectDate] = useState(false);
+
+    const dispatch = useDispatch();
+
+    useEffect(() => {
+        let someValid = timeRangeFilter.get('range').some((item) => item !== null);
+        if (someValid) {
+            setSelectDate(true);
+        } else {
+            setSelectDate(false);
+        }
+    }, [timeRangeFilter]);
+
+    const setTimeRange = (time, key) => {
+        const timeToSave = {
+            from: {
+                action: (timeToTransform) =>
+                    dispatch(
+                        setField({
+                            path: ['filters', 'time', 'from'],
+                            value: timeToTransform.toISOString()
+                        })
+                    )
+            },
+            to: {
+                action: (timeToTransform) =>
+                    dispatch(
+                        setField({
+                            path: ['filters', 'time', 'to'],
+                            value: timeToTransform.toISOString()
+                        })
+                    )
+            }
+        };
+        let isDateValid = new Date(time) !== 'Invalid Date' && !isNaN(new Date(time));
+
+        if (isDateValid) {
+            timeToSave[key].action(time);
+        }
+    };
 
     return (
         <div className={classes.timeWrapper}>
@@ -18,8 +62,8 @@ const TimeComponent = () => {
                 </Typography>
                 <LocalizationProvider dateAdapter={AdapterDateFns}>
                     <TimePicker
-                        value={value}
-                        onChange={(newValue) => setValue(newValue)}
+                        value={timeRangeFilter.getIn(['time', 'from'])}
+                        onChange={(newValue) => setTimeRange(newValue, 'from')}
                         ampm={false}
                         disableOpenPicker
                         renderInput={(props) => (
@@ -29,6 +73,7 @@ const TimeComponent = () => {
                                 placeholder='Time from'
                             />
                         )}
+                        disabled={!isDateSelected}
                     />
                 </LocalizationProvider>
             </div>
@@ -39,14 +84,15 @@ const TimeComponent = () => {
                 </Typography>
                 <LocalizationProvider dateAdapter={AdapterDateFns}>
                     <TimePicker
-                        value={value}
-                        onChange={(newValue) => setValue(newValue)}
+                        value={timeRangeFilter.getIn(['time', 'to'])}
+                        onChange={(newValue) => setTimeRange(newValue, 'to')}
                         ampm={false}
-                        laceholder=''
+                        placeholder=''
                         disableOpenPicker
                         renderInput={(params) => (
                             <TextField {...params} className={classes.root} placeholder='Time to' />
                         )}
+                        disabled={!isDateSelected}
                     />
                 </LocalizationProvider>
             </div>

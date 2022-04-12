@@ -2,6 +2,7 @@ const fs = require('fs');
 const readline = require('readline');
 const multer = require('multer');
 const Request = require('./models/Request');
+const { format } = require('date-fns');
 
 const createAndReadFile = async (filePath, fileName) => {
     //create a read stream of the File
@@ -52,4 +53,32 @@ const multerStorage = multer.diskStorage({
     }
 });
 
-module.exports = { createAndReadFile, multerStorage };
+const buildSearchParams = (frontendParams) => {
+    let dateRange = [...frontendParams.range];
+    let timeRange = frontendParams.time;
+
+    let formattedTime = getTimeFromTimeStamp(timeRange);
+
+    let filteredArray = dateRange.map((item, index) => {
+        let timeRange = formattedTime[index === 0 ? 'from' : 'to'];
+        let date = format(new Date(item), 'yyyy-MM-dd');
+        let filteredRange = `${date.toString()}${timeRange.toString()}`;
+        console.log(filteredRange);
+        return filteredRange;
+    });
+
+    return filteredArray;
+};
+
+const getTimeFromTimeStamp = (timeRange) => {
+    Object.keys(timeRange).map((key, index) => {
+        let date = new Date(timeRange[key]);
+        timeRange[key] = format(date, "'T'HH:mm:ss");
+    });
+
+    return timeRange;
+};
+
+const getDateFromTimeStamp = (dateRange) => {};
+
+module.exports = { createAndReadFile, multerStorage, buildSearchParams };

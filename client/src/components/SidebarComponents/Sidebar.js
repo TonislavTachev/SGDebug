@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { makeStyles } from '@mui/styles';
 import SGLogo from '../../assets/logo/download.png';
 import { Typography } from '@mui/material';
@@ -9,7 +9,7 @@ import FileItem from './FileItem';
 import SGModal from '../SGComponents/SGModal';
 import FileUpload from '../SGComponents/FileUpload';
 import { useDispatch, useSelector } from 'react-redux';
-import { uploadFiles } from '../../actions/actions';
+import { uploadFiles, filterRequests } from '../../actions/actions';
 
 const Sidebar = ({ setLoading }) => {
     const classes = useStyles();
@@ -19,6 +19,7 @@ const Sidebar = ({ setLoading }) => {
     const dispatch = useDispatch();
 
     const uploadedFiles = useSelector(({ fileReducer }) => fileReducer.get('uploadedFiles'));
+    const requestFilters = useSelector(({ requestReducer }) => requestReducer.get('filters'));
 
     const openFileUploadModal = () => {
         setModalOpen(true);
@@ -30,6 +31,15 @@ const Sidebar = ({ setLoading }) => {
 
         dispatch(uploadFiles(data));
     };
+
+    useEffect(() => {
+        let dateRangeSelected = requestFilters.get('range').every((item) => item !== null);
+        let isTimeEntered = requestFilters.get('time').every((value, key) => value !== '');
+
+        if (dateRangeSelected && isTimeEntered) {
+            dispatch(filterRequests(requestFilters));
+        }
+    }, [requestFilters]);
 
     return (
         <div className={classes.wrapperContainer}>

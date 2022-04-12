@@ -8,14 +8,21 @@ import enLocale from 'date-fns/locale/en-GB';
 import { makeStyles } from '@mui/styles';
 import { useSelector, useDispatch } from 'react-redux';
 import { setField } from '../../actions/actions';
+import { format, parseISO } from 'date-fns';
+import { DATE_FORMAT } from '../../constants';
+import { useEffect } from 'react';
 
 const SGCalendar = () => {
     const startDate = useSelector(({ requestReducer }) => requestReducer.get('startDate'));
     const endDate = useSelector(({ requestReducer }) => requestReducer.get('endDate'));
+    const DateRangeFilter = useSelector(({ requestReducer }) => requestReducer.get('filters'));
 
     const dispatch = useDispatch();
 
-    const [value, setValue] = React.useState([startDate, endDate]);
+    const [value, setValue] = React.useState([
+        DateRangeFilter.getIn(['range', 0]),
+        DateRangeFilter.getIn(['range', 1])
+    ]);
 
     const classes = useStyles();
 
@@ -28,12 +35,14 @@ const SGCalendar = () => {
                 // minDate={startDate !== null && new Date(startDate)}
                 // maxDate={endDate !== null && new Date(endDate)}
                 onChange={(newValue) => {
-                    console.log(newValue);
-                    dispatch(setField({ path: ['filters', 'range'], value: 123 }));
-                    setValue(newValue);
+                    dispatch(
+                        setField({
+                            path: ['filters', 'range'],
+                            value: newValue
+                        })
+                    );
                 }}
                 renderInput={({ inputProps, ...startProps }, endProps) => {
-                    const startValue = inputProps.value;
                     delete inputProps.value;
                     return (
                         <TextField
@@ -49,9 +58,15 @@ const SGCalendar = () => {
                             }}
                             placeholder='Select Date'
                             value={
-                                value.every((item) => item === null)
+                                DateRangeFilter.get('range').every((item) => item === null)
                                     ? ''
-                                    : `${startValue} - ${endProps.inputProps.value}`
+                                    : `${format(
+                                          new Date(DateRangeFilter.getIn(['range', 0])),
+                                          DATE_FORMAT
+                                      )} - ${format(
+                                          new Date(DateRangeFilter.getIn(['range', 1])),
+                                          DATE_FORMAT
+                                      )}`
                             }
                         />
                     );

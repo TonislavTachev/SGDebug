@@ -35,8 +35,6 @@ const addToDBBatch = (jsonRequest) => {
 const onInsert = (err, docs) => {
     if (err) {
         // TODO: handle error
-    } else {
-        console.info('%d Requests were successfully stored.', docs.length);
     }
 };
 
@@ -78,7 +76,5 @@ const getTimeFromTimeStamp = (timeRange) => {
 
     return timeRange;
 };
-
-const getDateFromTimeStamp = (dateRange) => {};
 
 module.exports = { createAndReadFile, multerStorage, buildSearchParams };

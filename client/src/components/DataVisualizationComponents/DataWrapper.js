@@ -9,9 +9,9 @@ import { useDispatch, useSelector } from 'react-redux';
 const DataWrapper = () => {
     const dispatch = useDispatch();
 
-    useEffect(() => {
-        dispatch(fetchAllRequests());
-    }, []);
+    // useEffect(() => {
+    //     dispatch(fetchAllRequests());
+    // }, []);
 
     const classes = useStyles();
 

@@ -19,7 +19,6 @@ const FileItem = ({ fileName }) => {
             <Tooltip title={fileName}>
                 <div className={classes.progressAndName}>
                     <Typography>{fileName}</Typography>
-                    <LinearProgress value={50} />
                 </div>
             </Tooltip>
             <div className={classes.removeItem}>
@@ -49,8 +48,7 @@ const useStyles = makeStyles((theme) => ({
     progressAndName: {
         display: 'flex',
         flexDirection: 'column',
-        justifyContent: 'center',
-        marginTop: '-10px'
+        justifyContent: 'center'
     },
     removeItem: {
         display: 'flex',

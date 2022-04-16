@@ -3,10 +3,17 @@ import { makeStyles } from '@mui/styles';
 import Sidebar from './SidebarComponents/Sidebar';
 import DataWrapper from './DataVisualizationComponents/DataWrapper';
 import IsLoadingHoc from '../customHooks/LoaderHOC';
+import { fetchAllRequests } from '../actions/actions';
+import { useDispatch, useSelector } from 'react-redux';
+
 const Wrapper = ({ setLoading, isLoaded }) => {
     const classes = useStyles();
 
-    useEffect(() => {}, []);
+    const dispatch = useDispatch();
+
+    useEffect(() => {
+        dispatch(fetchAllRequests());
+    }, []);
 
     return (
         <div className={classes.wrapperContainer}>

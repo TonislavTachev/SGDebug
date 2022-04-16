@@ -2,10 +2,10 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { makeStyles, styled } from '@mui/styles';
 import { Grid, Paper } from '@mui/material';
-
+import FileIcon from '../../assets/icons/file.png';
 const FileUploadModalContent = ({
     handleFileChange,
-    selectedFile,
+    selectedFiles,
     translate,
     hasAdditionalMessage,
     validationError,
@@ -38,13 +38,14 @@ const FileUploadModalContent = ({
                 </div>
             )}
             {validationError && <div className={classes.error}>{validationError}</div>}
-            {selectedFile && (
-                <FileMetaData elevation={0}>
-                    <div className='file-info-wrapper'>
-                        <span>{selectedFile.name}</span>
-                    </div>
-                </FileMetaData>
-            )}
+            {selectedFiles.length > 0 &&
+                selectedFiles.map((item) => {
+                    return (
+                        <FileMetaData elevation={0}>
+                            {item} <img src={FileIcon} className={classes.icon} alt='File icon' />
+                        </FileMetaData>
+                    );
+                })}
         </StyledContent>
     );
 };
@@ -52,9 +53,9 @@ const FileUploadModalContent = ({
 const StyledContent = styled(Grid)({
     display: 'flex',
     flex: '1',
-    flexDirection: 'column',
+    flexDirection: 'column !important',
+    minHeight: '200px',
     width: '500px !important',
-    height: '200px',
     '& .drop-area': {
         position: 'relative',
         display: 'flex',
@@ -86,6 +87,8 @@ const StyledContent = styled(Grid)({
         }
     },
     '& .error': {
+        marginTop: '10px',
+        fontSize: '14px',
         color: 'red'
     }
 });
@@ -97,7 +100,9 @@ const FileMetaData = styled(Paper)({
     background: '#F5F5F5 0% 0% no-repeat padding-box',
     border: '1px solid #D7D6D6',
     alignItems: 'center',
+    marginTop: '15px',
     justifyContent: 'space-between',
+    boxShadow: 'none',
     '& .file-info-wrapper': {
         display: 'flex',
         alignItems: 'center',
@@ -126,6 +131,9 @@ const useStyles = makeStyles((theme) => ({
         justifyContent: 'center',
         color: 'red',
         fontSize: '12px'
+    },
+    icon: {
+        width: '32px'
     }
 }));
 

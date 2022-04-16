@@ -6,7 +6,7 @@ import FileIcon from '../../assets/icons/file.png';
 import LinearProgress from '@mui/material/LinearProgress';
 import Tooltip, { TooltipProps, tooltipClasses } from '@mui/material/Tooltip';
 
-const FileItem = ({ fileName }) => {
+const FileItem = ({ fileName, removeFile, fileIndex, originalFilename }) => {
     const classes = useStyles();
 
     const [isHovered, setIsHoveredOver] = useState(false);
@@ -21,7 +21,10 @@ const FileItem = ({ fileName }) => {
                     <Typography>{fileName}</Typography>
                 </div>
             </Tooltip>
-            <div className={classes.removeItem}>
+            <div
+                className={classes.removeItem}
+                onClick={() => removeFile(originalFilename, fileIndex)}
+            >
                 <HighlightOffIcon />
             </div>
         </div>

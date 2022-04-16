@@ -9,8 +9,15 @@ import FileItem from './FileItem';
 import SGModal from '../SGComponents/SGModal';
 import FileUpload from '../SGComponents/FileUpload';
 import { useDispatch, useSelector } from 'react-redux';
-import { uploadFiles, filterRequests, fetchAllRequests } from '../../actions/actions';
+import {
+    uploadFiles,
+    filterRequests,
+    fetchAllRequests,
+    removeLogFile,
+    setField
+} from '../../actions/actions';
 import IsLoadingHoc from '../../customHooks/LoaderHOC';
+import SGSnackbar from '../SGComponents/SGSnackbar';
 
 const Sidebar = ({ setLoading }) => {
     const classes = useStyles();
@@ -18,6 +25,7 @@ const Sidebar = ({ setLoading }) => {
     const [validationError, setErrors] = useState('');
     const [filesToUpload, setFilesToUpload] = useState(null);
     const [isModalOpen, setModalOpen] = useState(false);
+    const [snackBarState, setSnackbarState] = useState(true);
 
     const dispatch = useDispatch();
 
@@ -25,10 +33,22 @@ const Sidebar = ({ setLoading }) => {
     const uploadedFiles = useSelector(({ requestReducer }) => requestReducer.get('fileNames'));
     const requestFilters = useSelector(({ requestReducer }) => requestReducer.get('filters'));
     const requests = useSelector(({ requestReducer }) => requestReducer.get('requests'));
+    const isFileRemoved = useSelector(({ requestReducer }) => requestReducer.get('fileRemoved'));
 
     const openFileUploadModal = () => {
         setModalOpen(true);
     };
+
+    const items = [
+        { logFileOrigin: 'impl-generali-insurance08032022' },
+        { logFileOrigin: 'impl-generali-insurance08032022' },
+        { logFileOrigin: 'impl-generali-insurance08032022' },
+        { logFileOrigin: 'impl-generali-insurance08032022' },
+        { logFileOrigin: 'impl-generali-insurance08032022' },
+        { logFileOrigin: 'impl-generali-insurance08032022' },
+        { logFileOrigin: 'impl-generali-insurance08032022' },
+        { logFileOrigin: 'impl-generali-insurance08032022' }
+    ];
 
     const handleFileChange = async (event) => {
         if (event.target.files.length <= 3) {
@@ -43,7 +63,7 @@ const Sidebar = ({ setLoading }) => {
         }
     };
 
-    const closeUploadModal = (event, reason) => {
+    const closeUploadModal = () => {
         setModalOpen(false);
         setSelectedFiles([]);
     };
@@ -59,6 +79,15 @@ const Sidebar = ({ setLoading }) => {
         setModalOpen(false);
     };
 
+    const removeFile = (fileName, fileIndex) => {
+        setLoading(true);
+        dispatch(removeLogFile(fileName, fileIndex));
+    };
+
+    const handleSnackbarClose = () => {
+        setSnackbarState(false);
+    };
+
     useEffect(() => {
         let dateRangeSelected = requestFilters.get('range').every((item) => item !== null);
         let isTimeEntered = requestFilters.get('time').every((value, key) => value !== '');
@@ -68,19 +97,39 @@ const Sidebar = ({ setLoading }) => {
         }
     }, [requestFilters]);
 
-    console.log(filesUploaded);
+    useEffect(() => {
+        if (filesUploaded === true) {
+            const fetchDocumentsInterval = setInterval(dispatch(fetchAllRequests()), 5000);
+
+            if (requests.length > 0) {
+                clearInterval(fetchDocumentsInterval);
+                setLoading(false);
+                dispatch(setField({ path: ['filesUploaded'], value: false }));
+            }
+        }
+    }, [filesUploaded, requests]);
 
     useEffect(() => {
-        if (filesUploaded) {
-            setTimeout(() => {
-                dispatch(fetchAllRequests());
-            }, 2000);
+        if (isFileRemoved === true) {
             setLoading(false);
+            dispatch(setField({ path: ['requests'], value: [] }));
         }
-    }, [filesUploaded]);
+    }, [isFileRemoved]);
+
+    useEffect(() => {
+        dispatch(fetchAllRequests());
+    }, []);
 
     return (
         <div className={classes.wrapperContainer}>
+            {isFileRemoved && (
+                <SGSnackbar
+                    open={snackBarState}
+                    severity='success'
+                    handleClose={handleSnackbarClose}
+                    message={'Successfully deleted log file'}
+                />
+            )}
             <div className={classes.headerWrapper}>
                 <div className={classes.imageWrapper}>
                     <img src={SGLogo} alt='Logo of company' className={classes.logo} />
@@ -118,9 +167,16 @@ const Sidebar = ({ setLoading }) => {
                     Uploaded log files
                 </Typography>
                 <div className={classes.uploadedFilesWrapper}>
-                    {uploadedFiles.length > 0 &&
-                        uploadedFiles.map((item, index) => {
-                            return <FileItem fileName={item.logFileOrigin.slice(0, 25)} />;
+                    {items.length > 0 &&
+                        items.map((item, index) => {
+                            return (
+                                <FileItem
+                                    fileName={item.logFileOrigin.slice(0, 25)}
+                                    originalFilename={item.logFileOrigin}
+                                    fileIndex={index}
+                                    removeFile={removeFile}
+                                />
+                            );
                         })}
                 </div>
             </div>
@@ -147,6 +203,7 @@ const useStyles = makeStyles((theme) => ({
     wrapperContainer: {
         height: '100%',
         flex: '1',
+        maxWidth: '310px',
         padding: '20px'
     },
     headerWrapper: {
@@ -179,9 +236,7 @@ const useStyles = makeStyles((theme) => ({
     uploadedFiles: {
         marginTop: '30px'
     },
-    uploadedFilesWrapper: {
-        maxHeight: '230px'
-    }
+    uploadedFilesWrapper: {}
 }));
 
 export default IsLoadingHoc(Sidebar, "Please wait, we're processing your files");

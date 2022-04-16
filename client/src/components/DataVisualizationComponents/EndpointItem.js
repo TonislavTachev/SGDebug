@@ -82,7 +82,8 @@ const useStyles = makeStyles((theme) => ({
         marginBottom: '16px',
         backgroundColor: '#FFF',
         position: 'relative',
-        cursor: 'pointer'
+        cursor: 'pointer',
+        marginRight: '30px'
     },
     timeAndDateWrapper: {
         background: '#7eccff',

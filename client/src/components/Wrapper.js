@@ -5,18 +5,16 @@ import DataWrapper from './DataVisualizationComponents/DataWrapper';
 import IsLoadingHoc from '../customHooks/LoaderHOC';
 import { fetchAllRequests } from '../actions/actions';
 import { useDispatch, useSelector } from 'react-redux';
+import CssBaseline from '@mui/material/CssBaseline';
 
 const Wrapper = ({ setLoading, isLoaded }) => {
     const classes = useStyles();
 
     const dispatch = useDispatch();
 
-    useEffect(() => {
-        dispatch(fetchAllRequests());
-    }, []);
-
     return (
         <div className={classes.wrapperContainer}>
+            <CssBaseline />
             <Sidebar />
             <DataWrapper />
         </div>

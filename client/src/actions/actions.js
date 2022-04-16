@@ -1,4 +1,4 @@
-import { UPLOAD_FILES, FETCH_REQUEST, GET_REQUEST, SET_FIELD } from '../actionTypes';
+import { UPLOAD_FILES, FETCH_REQUEST, GET_REQUEST, SET_FIELD, DELETE_FILE } from '../actionTypes';
 import API from '../axiosInstance';
 
 export const uploadFiles = (files) => async (dispatch) => {
@@ -50,7 +50,25 @@ export const filterRequests = (filters) => async (dispatch) => {
     } catch (error) {}
 };
 
+export const removeLogFile = (fileName, fileId) => async (dispatch) => {
+    const removeFileObj = {
+        fileName: fileName
+    };
+    try {
+        let res = await API.post('/deleteFile', removeFileObj, {
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        });
+
+        if (res.status === 200) {
+            dispatch({ type: DELETE_FILE, payload: fileId });
+        }
+    } catch (error) {}
+};
+
 export const setField = (body) => (dispatch) => {
+    console.log(body);
     dispatch({ type: SET_FIELD, payload: body });
 };
 export const getRequest = (request) => async (dispatch) => {

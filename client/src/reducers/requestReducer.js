@@ -3,6 +3,7 @@ import { fromJS } from 'immutable';
 
 const defaultState = fromJS({
     requests: [],
+    fileNames: [],
     request: {},
     startDate: null,
     endDate: null,
@@ -21,7 +22,8 @@ export default function requestReducer(state = defaultState, { type, payload }) 
             return state
                 .set('requests', payload.data)
                 .set('startDate', payload.startDate)
-                .set('endDate', payload.endDate);
+                .set('endDate', payload.endDate)
+                .set('fileNames', payload.fileNames);
         case GET_REQUEST:
             return state.set('request', payload);
         case SET_FIELD: {

@@ -8,6 +8,7 @@ require('dotenv').config({ path: __dirname + '/.env' });
 const cors = require('cors');
 const bodyParser = require('body-parser');
 const Request = require('./models/Request');
+const LogFileOrigin = require('./models/LogFileOrigin');
 
 const port = process.env.NODE_DOCKER_PORT || 8080;
 
@@ -15,10 +16,12 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 app.use(cors({ credentials: true, origin: true }));
 
-app.post('/upload', upload.single('file'), async (req, res) => {
-    const uploadedFile = req.file;
-    createAndReadFile(uploadedFile.path, uploadedFile.originalname);
-    res.json({ msg: uploadedFile.originalname });
+app.post('/upload', upload.array('files', 3), async (req, res) => {
+    const uploadedFile = req.files;
+    let result = createAndReadFile(uploadedFile[0].path, uploadedFile[0].originalname);
+    result.then((data) => {
+        res.json({ msg: uploadedFile[0].originalname });
+    });
 });
 
 app.post('/fetchRequests', async (req, res) => {
@@ -35,12 +38,18 @@ app.post('/fetchRequests', async (req, res) => {
             { $sort: { time: 1 } },
             {
                 $facet: {
-                    data: [{ $skip: pagination.skip }, { $limit: pagination.limit }],
-                    startDate: [{ $sort: { time: 1 } }, { $limit: 1 }],
-                    endDate: [{ $sort: { time: -1 } }, { $limit: 1 }]
+                    data: [{ $skip: pagination.skip }, { $limit: pagination.limit }]
                 }
             }
         ]);
+
+        let originalFileNames = await Request.aggregate([
+            { $group: { _id: null, logFileOrigin: { $addToSet: '$logFileOrigin' } } },
+            { $unwind: '$logFileOrigin' },
+            { $project: { _id: 0 } }
+        ]);
+
+        let result = await Promise.all([data, originalFileNames]);
 
         // let converted = await Request.aggregate([
         //     {
@@ -78,9 +87,10 @@ app.post('/fetchRequests', async (req, res) => {
         // ]);
 
         res.json({
-            data: data[0].data,
-            startDate: data[0].startDate[0].time,
-            endDate: data[0].endDate[0].time
+            data: result[0][0].data,
+            // startDate: result[0][0].startDate[0].time,
+            // endDate: result[0][0].endDate[0].time,
+            fileNames: result[1]
         });
     } catch (error) {
         console.log(error);

@@ -9,7 +9,11 @@ export const uploadFiles = (files) => async (dispatch) => {
             }
         });
 
-        dispatch({ type: UPLOAD_FILES, payload: res.data.msg });
+        console.log(res.data);
+
+        if (res.status === 200) {
+            dispatch({ type: UPLOAD_FILES, payload: res.data.msg });
+        }
     } catch (error) {}
 };
 

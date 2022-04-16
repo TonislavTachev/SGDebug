@@ -38,7 +38,8 @@ app.post('/fetchRequests', async (req, res) => {
             { $sort: { time: 1 } },
             {
                 $facet: {
-                    data: [{ $skip: pagination.skip }, { $limit: pagination.limit }]
+                    data: [{ $skip: pagination.skip }, { $limit: pagination.limit }],
+                    total: [{ $count: 'total' }]
                 }
             }
         ]);
@@ -90,7 +91,8 @@ app.post('/fetchRequests', async (req, res) => {
             data: result[0][0].data,
             // startDate: result[0][0].startDate[0].time,
             // endDate: result[0][0].endDate[0].time,
-            fileNames: result[1]
+            fileNames: result[1],
+            totalPages: result[0][0].total[0].total
         });
     } catch (error) {
         console.log(error);

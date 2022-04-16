@@ -34,6 +34,7 @@ const Sidebar = ({ setLoading }) => {
     const requestFilters = useSelector(({ requestReducer }) => requestReducer.get('filters'));
     const requests = useSelector(({ requestReducer }) => requestReducer.get('requests'));
     const isFileRemoved = useSelector(({ requestReducer }) => requestReducer.get('fileRemoved'));
+    const page = useSelector(({ requestReducer }) => requestReducer.getIn(['pagination', 'page']));
 
     const openFileUploadModal = () => {
         setModalOpen(true);
@@ -99,7 +100,7 @@ const Sidebar = ({ setLoading }) => {
 
     useEffect(() => {
         if (filesUploaded === true) {
-            const fetchDocumentsInterval = setInterval(dispatch(fetchAllRequests()), 5000);
+            const fetchDocumentsInterval = setInterval(dispatch(fetchAllRequests(page)), 5000);
 
             if (requests.length > 0) {
                 clearInterval(fetchDocumentsInterval);
@@ -117,7 +118,7 @@ const Sidebar = ({ setLoading }) => {
     }, [isFileRemoved]);
 
     useEffect(() => {
-        dispatch(fetchAllRequests());
+        dispatch(fetchAllRequests(page));
     }, []);
 
     return (
@@ -186,6 +187,9 @@ const Sidebar = ({ setLoading }) => {
                     handleClose={closeUploadModal}
                     handleSave={saveAndUploadFiles}
                     hasLogFiles={selectedFiles.length > 0}
+                    dialogTitle='Upload log files'
+                    hasActions
+                    isFullScreen={false}
                     dialogContent={
                         <FileUpload
                             handleFileChange={handleFileChange}

@@ -16,8 +16,9 @@ const defaultState = fromJS({
     },
     fileRemoved: false,
     pagination: {
-        page: 0,
-        perPage: 12
+        page: 1,
+        perPage: 12,
+        totalPages: 0
     }
 });
 
@@ -28,7 +29,8 @@ export default function requestReducer(state = defaultState, { type, payload }) 
                 .set('requests', payload.data)
                 .set('startDate', payload.startDate)
                 .set('endDate', payload.endDate)
-                .set('fileNames', payload.fileNames);
+                .set('fileNames', payload.fileNames)
+                .setIn(['pagination', 'totalPages'], payload.totalPages);
         case GET_REQUEST:
             return state.set('request', payload);
         case SET_FIELD: {

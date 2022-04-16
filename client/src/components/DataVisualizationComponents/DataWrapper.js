@@ -2,29 +2,40 @@ import React, { useEffect, useState } from 'react';
 import { makeStyles } from '@mui/styles';
 import EndpointItem from './EndpointItem';
 import { Typography } from '@mui/material';
-import BodyDetailsComponent from './BodyDetailsComponent';
 import { fetchAllRequests, getRequest } from '../../actions/actions';
 import { useDispatch, useSelector } from 'react-redux';
 import NoFiles from './NoFiles';
 import SGPagination from '../SGComponents/SGPagination';
+import SGModal from '../SGComponents/SGModal';
+import BodyDetailsComponent from './DetailsModal';
+
 const DataWrapper = () => {
     const dispatch = useDispatch();
-
-    // useEffect(() => {
-    //     dispatch(fetchAllRequests());
-    // }, []);
 
     const classes = useStyles();
 
     const fetchedRequests = useSelector(({ requestReducer }) => requestReducer.get('requests'));
+    const selectedStateRequest = useSelector(({ requestReducer }) => requestReducer.get('request'));
+    const page = useSelector(({ requestReducer }) => requestReducer.getIn(['pagination', 'page']));
+
+    const [isModalOpen, setModalOpen] = useState(false);
 
     const [selectedRequest, setSelectedRequest] = useState();
     const [openBody, setBodyOpenState] = useState(false);
 
     const fetchRequestAndExpandBody = (id) => {
         let individualRequest = fetchedRequests[id];
+        setModalOpen(true);
         dispatch(getRequest(individualRequest));
     };
+
+    const closeDetailsModal = () => {
+        setModalOpen(false);
+    };
+
+    useEffect(() => {
+        dispatch(fetchAllRequests(page));
+    }, [page, dispatch]);
 
     return (
         <div className={classes.wrapperContainer}>
@@ -54,6 +65,16 @@ const DataWrapper = () => {
                             })}
                     </div>
                     <SGPagination />
+                    <SGModal
+                        open={isModalOpen}
+                        handleClose={closeDetailsModal}
+                        dialogContent={
+                            <BodyDetailsComponent selectedRequest={selectedStateRequest} />
+                        }
+                        hasActions={false}
+                        dialogFullScreenTitle={selectedStateRequest}
+                        isFullScreen
+                    />
                 </div>
             )}
         </div>
@@ -73,7 +94,8 @@ const useStyles = makeStyles((theme) => ({
         flexWrap: 'wrap',
         justifyContent: 'center',
         [theme.breakpoints.up('xl')]: {
-            justifyContent: 'flex-start'
+            justifyContent: 'flex-start',
+            marginLeft: '74px'
         }
     },
     dataWrapper: {

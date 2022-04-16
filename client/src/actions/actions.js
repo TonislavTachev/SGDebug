@@ -17,10 +17,10 @@ export const uploadFiles = (files) => async (dispatch) => {
     } catch (error) {}
 };
 
-export const fetchAllRequests = () => async (dispatch) => {
+export const fetchAllRequests = (pageNumber) => async (dispatch) => {
     const pagination = {
         perPage: 10,
-        pageNumber: 1
+        pageNumber: pageNumber
     };
 
     try {
@@ -71,6 +71,7 @@ export const setField = (body) => (dispatch) => {
     console.log(body);
     dispatch({ type: SET_FIELD, payload: body });
 };
+
 export const getRequest = (request) => async (dispatch) => {
     dispatch({ type: GET_REQUEST, payload: request });
 };

@@ -140,6 +140,16 @@ app.post('/filterRequests', async (req, res) => {
     }
 });
 
+app.post('/deleteFile', async (req, res) => {
+    const { fileName } = req.body;
+
+    try {
+        await Request.remove({ logFileOrigin: fileName });
+
+        res.status(200).json({ msg: 'Successfully removed file' });
+    } catch (error) {}
+});
+
 app.listen(port, async () => {
     console.log(`Listening on port ${port}`);
     Connection.open();

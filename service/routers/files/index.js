@@ -14,7 +14,6 @@ router.post('/upload', upload.array('files', 3), async function(req, res) {
     });
 });
 
-
 /* POST delete file */
 router.post('/delete', async function(req, res) {
     const { fileName } = req.body;
@@ -25,7 +24,5 @@ router.post('/delete', async function(req, res) {
         res.status(200).json({ msg: 'Successfully removed file' });
     } catch (error) {}
 });
-
-
 
 module.exports = router;

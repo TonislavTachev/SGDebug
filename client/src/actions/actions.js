@@ -3,7 +3,7 @@ import API from '../axiosInstance';
 
 export const uploadFiles = (files) => async (dispatch) => {
     try {
-        let res = await API.post('/upload', files, {
+        let res = await API.post('/api/files/upload', files, {
             headers: {
                 'Content-Type': 'multipart/form-data'
             }
@@ -24,7 +24,7 @@ export const fetchAllRequests = (pageNumber) => async (dispatch) => {
     };
 
     try {
-        let res = await API.post('/fetchRequests', pagination, {
+        let res = await API.post('/api/requests/fetch', pagination, {
             headers: {
                 'Content-Type': 'application/json'
             }
@@ -42,7 +42,7 @@ export const filterRequests = (filters) => async (dispatch) => {
     };
 
     try {
-        let res = await API.post('/filterRequests', filtersObj, {
+        let res = await API.post('/api/requests/filter', filtersObj, {
             headers: {
                 'Content-Type': 'application/json'
             }
@@ -55,7 +55,7 @@ export const removeLogFile = (fileName, fileId) => async (dispatch) => {
         fileName: fileName
     };
     try {
-        let res = await API.post('/deleteFile', removeFileObj, {
+        let res = await API.post('/api/files/delete', removeFileObj, {
             headers: {
                 'Content-Type': 'application/json'
             }

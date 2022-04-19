@@ -43,7 +43,7 @@ const SGModal = ({
                             <CloseIcon />
                         </IconButton>
                         <Typography sx={{ ml: 2, flex: 1 }} variant='h6' component='div'>
-                            {dialogFullScreenTitle.body.hasOwnProperty('method')
+                            {dialogFullScreenTitle.body && dialogFullScreenTitle.body.hasOwnProperty('method')
                                 ? dialogFullScreenTitle.body.method
                                 : 'No method name'}
                         </Typography>

@@ -67,11 +67,11 @@ router.post('/fetch', async function(req, res, next) {
         // ]);
 
         res.json({
-            data: result[0][0].data,
+            data: data[0].data,
             // startDate: result[0][0].startDate[0].time,
             // endDate: result[0][0].endDate[0].time,
-            fileNames: result[1],
-            totalPages: result[0][0].total[0].total
+            fileNames: originalFileNames,
+            totalPages: data[0]?.total[0]?.total
         });
     } catch (error) {
         console.log(error);

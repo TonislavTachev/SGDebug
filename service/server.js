@@ -13,7 +13,7 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 app.use(cors({ credentials: true, origin: true }));
 
-app.use(require('./routers'));
+app.use('/api', require('./routers'));
 
 app.listen(port, async () => {
     console.log(`Listening on port ${port}`);

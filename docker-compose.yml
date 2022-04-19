@@ -1,0 +1,17 @@
+version: "3.7"
+services:
+  mongodb:
+    image: mongo
+    restart: always
+    ports:
+      - 27017:27017 #remove this port exposing when ready to deploy
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: 1q2w3e4razsxdcfv
+      MONGO_INITDB_DATABASE: logdb
+  client:
+    build: ./client
+    ports:
+        - 18002:18002
+  service:
+    build: ./service

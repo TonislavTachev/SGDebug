@@ -3,5 +3,34 @@
     // Hover to view descriptions of existing attributes.
     // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
     "version": "0.2.0",
-    "configurations": []
+    "configurations": [
+        {
+            "name": "Client",
+            "type": "node",
+            "request": "launch",
+            "runtimeExecutable": "npm",
+            "runtimeArgs": ["run", "start"],
+            "cwd": "${workspaceRoot}/client",
+            "outputCapture": "std",
+            "console": "externalTerminal",
+            "skipFiles": ["<node_internals>/**"],
+            "linux": {
+                "protocol": "inspector"
+            }
+        },
+        {
+            "name": "Service",
+            "type": "node",
+            "request": "launch",
+            "runtimeExecutable": "node",
+            "runtimeArgs": ["server.js"],
+            "cwd": "${workspaceRoot}/service",
+            "outputCapture": "std",
+            "console": "externalTerminal",
+            "skipFiles": ["<node_internals>/**"],
+            "linux": {
+                "protocol": "inspector"
+            }
+        }
+    ]
 }

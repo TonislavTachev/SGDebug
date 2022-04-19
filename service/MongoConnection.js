@@ -11,7 +11,6 @@ class Connection {
     }
 }
 Connection.db = null;
-// Connection.url = `mongodb+srv://${process.env.MONGO_USER}:${process.env.MONGO_PASSWORD}@cluster0.rwpmp.mongodb.net/${process.env.MONGO_DB_NAME}?retryWrites=true&w=majority`;
 Connection.url = `mongodb+srv://${process.env.MONGO_USER}:${process.env.MONGO_PASSWORD}@${process.env.MONGO_SERVER}/${process.env.MONGO_DB_NAME}?retryWrites=true&w=majority`;
 
 Connection.options = {

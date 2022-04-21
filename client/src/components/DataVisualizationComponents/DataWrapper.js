@@ -8,6 +8,8 @@ import NoFiles from './NoFiles';
 import SGPagination from '../SGComponents/SGPagination';
 import SGModal from '../SGComponents/SGModal';
 import BodyDetailsComponent from './DetailsModal';
+import ChipNavigation from './ChipNavigation';
+import SGSwitch from '../SGComponents/SGSwitch';
 
 const DataWrapper = () => {
     const dispatch = useDispatch();
@@ -17,6 +19,9 @@ const DataWrapper = () => {
     const fetchedRequests = useSelector(({ requestReducer }) => requestReducer.get('requests'));
     const selectedStateRequest = useSelector(({ requestReducer }) => requestReducer.get('request'));
     const page = useSelector(({ requestReducer }) => requestReducer.getIn(['pagination', 'page']));
+    const selectedStateChip = useSelector(({ requestReducer }) =>
+        requestReducer.getIn(['filters', 'types'])
+    );
 
     const [isModalOpen, setModalOpen] = useState(false);
 
@@ -34,31 +39,28 @@ const DataWrapper = () => {
     };
 
     useEffect(() => {
-        dispatch(fetchAllRequests(page));
+        dispatch(fetchAllRequests(page, selectedStateChip));
     }, [page, dispatch]);
 
     return (
         <div className={classes.wrapperContainer}>
-            {fetchedRequests.length < 1 ? (
+            {fetchedRequests.size < 1 ? (
                 <NoFiles />
             ) : (
                 <div className={classes.dataWrapper}>
+                    <ChipNavigation />
                     <div className={classes.endpointContainer}>
                         {fetchedRequests.length > 0 &&
                             fetchedRequests.map((item, index) => {
                                 return (
                                     <EndpointItem
-                                        endpointName={
-                                            item.body.hasOwnProperty('method')
-                                                ? item.body.method
-                                                : 'No method name'
-                                        }
+                                        type={item}
                                         key={`${item._id}-${index}`}
                                         requestIndex={index}
                                         time={item.time}
                                         date={item.date}
                                         endpointType={'impl-generali-insurance'}
-                                        isError={item.isError}
+                                        isError={item.mtid === 'error'}
                                         fetchRequestAndExpandBody={fetchRequestAndExpandBody}
                                     />
                                 );

@@ -18,6 +18,7 @@ import {
 } from '../../actions/actions';
 import IsLoadingHoc from '../../customHooks/LoaderHOC';
 import SGSnackbar from '../SGComponents/SGSnackbar';
+import usePrevious from '../../customHooks/prevHook';
 
 const Sidebar = ({ setLoading }) => {
     const classes = useStyles();
@@ -35,6 +36,11 @@ const Sidebar = ({ setLoading }) => {
     const requests = useSelector(({ requestReducer }) => requestReducer.get('requests'));
     const isFileRemoved = useSelector(({ requestReducer }) => requestReducer.get('fileRemoved'));
     const page = useSelector(({ requestReducer }) => requestReducer.getIn(['pagination', 'page']));
+    const selectedStateChip = useSelector(({ requestReducer }) =>
+        requestReducer.getIn(['filters', 'types'])
+    );
+
+    const prevSelectedChip = usePrevious(selectedStateChip);
 
     const openFileUploadModal = () => {
         setModalOpen(true);
@@ -89,18 +95,23 @@ const Sidebar = ({ setLoading }) => {
         setSnackbarState(false);
     };
 
-    useEffect(() => {
-        let dateRangeSelected = requestFilters.get('range').every((item) => item !== null);
-        let isTimeEntered = requestFilters.get('time').every((value, key) => value !== '');
+    // useEffect(() => {
+    //     console.log('izvikwam se 2');
 
-        if (dateRangeSelected && isTimeEntered) {
-            dispatch(filterRequests(requestFilters));
-        }
-    }, [requestFilters]);
+    //     let dateRangeSelected = requestFilters.get('range').every((item) => item !== null);
+    //     let isTimeEntered = requestFilters.get('time').every((value, key) => value !== '');
+
+    //     if (dateRangeSelected && isTimeEntered) {
+    //         dispatch(filterRequests(requestFilters));
+    //     }
+    // }, [requestFilters]);
 
     useEffect(() => {
         if (filesUploaded === true) {
-            const fetchDocumentsInterval = setInterval(dispatch(fetchAllRequests(page)), 5000);
+            const fetchDocumentsInterval = setInterval(
+                dispatch(fetchAllRequests(page, selectedStateChip)),
+                5000
+            );
 
             if (requests.length > 0) {
                 clearInterval(fetchDocumentsInterval);
@@ -118,7 +129,13 @@ const Sidebar = ({ setLoading }) => {
     }, [isFileRemoved]);
 
     useEffect(() => {
-        dispatch(fetchAllRequests(page));
+        if (prevSelectedChip !== '' && prevSelectedChip !== selectedStateChip) {
+            dispatch(fetchAllRequests(page, selectedStateChip));
+        }
+    }, [selectedStateChip]);
+
+    useEffect(() => {
+        dispatch(fetchAllRequests(page, selectedStateChip));
     }, []);
 
     return (
@@ -168,8 +185,8 @@ const Sidebar = ({ setLoading }) => {
                     Uploaded log files
                 </Typography>
                 <div className={classes.uploadedFilesWrapper}>
-                    {items.length > 0 &&
-                        items.map((item, index) => {
+                    {uploadedFiles.length > 0 &&
+                        uploadedFiles.map((item, index) => {
                             return (
                                 <FileItem
                                     fileName={item.logFileOrigin.slice(0, 25)}

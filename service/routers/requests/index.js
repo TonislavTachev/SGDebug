@@ -3,17 +3,31 @@ const router = express.Router();
 const Request = require('../../models/Request');
 
 /* GET fetch requests data */
-router.post('/fetch', async function(req, res, next) {
+router.post('/fetch', async function (req, res, next) {
     try {
-        let { perPage, pageNumber } = req.body;
+        let { perPage, pageNumber, requestType } = req.body;
 
         var pagination = {
             limit: perPage,
             skip: perPage * (pageNumber - 1)
         };
 
-        let data = await Request.aggregate([
-            { $match: { mtid: 'request' } },
+        let types = {
+            swagger: 'request',
+            error: 'error'
+        };
+
+        let pipeline = [
+            {
+                $match: {
+                    $and: [
+                        {
+                            $or: [{ mtid: types[requestType] }],
+                            ...(requestType === 'error' && { $or: [{ error: { $exists: true } }] })
+                        }
+                    ]
+                }
+            },
             { $sort: { time: 1 } },
             {
                 $facet: {
@@ -21,7 +35,9 @@ router.post('/fetch', async function(req, res, next) {
                     total: [{ $count: 'total' }]
                 }
             }
-        ]);
+        ];
+
+        let data = await Request.aggregate(pipeline);
 
         let originalFileNames = await Request.aggregate([
             { $group: { _id: null, logFileOrigin: { $addToSet: '$logFileOrigin' } } },
@@ -79,7 +95,7 @@ router.post('/fetch', async function(req, res, next) {
     }
 });
 
-router.get('/get/:id', async function(req, res) {
+router.get('/get/:id', async function (req, res) {
     try {
         let foundRequest = await Request.findById(req.params.id);
 
@@ -93,7 +109,7 @@ router.get('/get/:id', async function(req, res) {
     }
 });
 
-router.post('/filter', async function(req, res) {
+router.post('/filter', async function (req, res) {
     let { perPage, pageNumber, filters } = req.body;
 
     var pagination = {

@@ -17,6 +17,16 @@ const theme = createTheme({
         generali: {
             primaryText: '#090e15',
             secondaryGrayText: '#6f7072'
+        },
+        error: {
+            light: '#AF2219',
+            main: '#F94144',
+            contrastText: '#ffffff'
+        },
+        green: {
+            light: '#C5281C',
+            main: '#85EA2D',
+            contrastText: '#FFFFFF'
         }
     },
     breakpoints: {

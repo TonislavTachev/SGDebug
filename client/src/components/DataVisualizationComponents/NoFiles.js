@@ -21,8 +21,8 @@ const useStyles = makeStyles((theme) => ({
         display: 'flex',
         flexDirection: 'column',
         alignItems: 'center',
-        height: '95vh',
-        width: '100%'
+        width: '100%',
+        padding: '10px'
     },
     iconAndTextWrapper: {
         display: 'flex',

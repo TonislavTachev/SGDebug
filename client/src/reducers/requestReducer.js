@@ -12,7 +12,8 @@ const defaultState = fromJS({
         time: {
             from: '',
             to: ''
-        }
+        },
+        types: 'swagger'
     },
     fileRemoved: false,
     pagination: {

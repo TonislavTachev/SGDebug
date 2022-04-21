@@ -13,7 +13,8 @@ const EndpointItem = ({
     endpointType,
     isError,
     requestIndex,
-    fetchRequestAndExpandBody
+    fetchRequestAndExpandBody,
+    type
 }) => {
     const classes = useStyles();
 
@@ -23,6 +24,20 @@ const EndpointItem = ({
 
     const formatDate = (dateToFormat) => {
         return `${format(new Date(dateToFormat), DATE_FORMAT)}`;
+    };
+
+    const checkEndpointTypeAndGetName = (endpoint) => {
+        if (endpoint.mtid === 'error') {
+            if (endpoint.hasOwnProperty('error')) {
+                return `${endpoint.error.type}`;
+            } else {
+                return typeof endpoint.message === 'object'
+                    ? `${endpoint.message.type}`
+                    : 'Unknown ';
+            }
+        } else if (endpoint.mtid === 'request') {
+            return `${endpoint.body.name}`;
+        }
     };
 
     return (
@@ -59,7 +74,7 @@ const EndpointItem = ({
                 <div className={classes.endpointNameWrapper}>
                     <Typography sx={{ marginLeft: '5px', color: '#b1abab' }}>Name</Typography>
                     <Typography sx={{ marginLeft: '5px', marginBottom: '5px' }}>
-                        {endpointName}
+                        {checkEndpointTypeAndGetName(type)}
                     </Typography>
                 </div>
                 <div className={classes.endpointNameWrapper}>

@@ -1,7 +1,6 @@
 const express = require('express');
 const app = express();
 
-
 const { Connection } = require('./MongoConnection');
 require('dotenv').config({ path: __dirname + '/.env' });
 const cors = require('cors');
@@ -19,6 +18,5 @@ app.listen(port, async () => {
     console.log(`Listening on port ${port}`);
     Connection.open();
 });
-
 
 module.exports = app;

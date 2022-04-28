@@ -9,7 +9,7 @@ router.post('/fetch', async function (req, res, next) {
 
         var pagination = {
             limit: perPage,
-            skip: perPage * (pageNumber - 1)
+            skip: (pageNumber - 1) * perPage
         };
 
         let types = {
@@ -23,7 +23,10 @@ router.post('/fetch', async function (req, res, next) {
                     $and: [
                         {
                             $or: [{ mtid: types[requestType] }],
-                            ...(requestType === 'error' && { $or: [{ error: { $exists: true } }] })
+                            ...(requestType === 'error' && { $or: [{ error: { $exists: true } }] }),
+                            ...(requestType === 'swagger' && {
+                                $or: [{ 'body.params.channel': { $eq: 'web' } }]
+                            })
                         }
                     ]
                 }
@@ -87,7 +90,7 @@ router.post('/fetch', async function (req, res, next) {
             // startDate: result[0][0].startDate[0].time,
             // endDate: result[0][0].endDate[0].time,
             fileNames: originalFileNames,
-            totalPages: data[0]?.total[0]?.total
+            totalPages: Math.ceil(data[0]?.total[0]?.total / perPage)
         });
     } catch (error) {
         console.log(error);
@@ -95,9 +98,9 @@ router.post('/fetch', async function (req, res, next) {
     }
 });
 
-router.get('/get/:id', async function (req, res) {
+router.get('/get/:trace', async function (req, res) {
     try {
-        let foundRequest = await Request.findById(req.params.id);
+        let foundRequest = await Request.find({ trace: req.params.trace, mtid: 'response' });
 
         if (!foundRequest) {
             return res.json(404).json({ msg: 'Request not found' });

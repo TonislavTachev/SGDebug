@@ -1,4 +1,11 @@
-import { UPLOAD_FILES, FETCH_REQUEST, GET_REQUEST, SET_FIELD, DELETE_FILE } from '../actionTypes';
+import {
+    UPLOAD_FILES,
+    FETCH_REQUEST,
+    GET_REQUEST,
+    SET_FIELD,
+    DELETE_FILE,
+    TRACE_REQUEST
+} from '../actionTypes';
 import API from '../axiosInstance';
 
 export const uploadFiles = (files) => async (dispatch) => {
@@ -74,4 +81,12 @@ export const setField = (body) => (dispatch) => {
 
 export const getRequest = (request) => async (dispatch) => {
     dispatch({ type: GET_REQUEST, payload: request });
+};
+
+export const traceRequestId = (requestId) => async (dispatch) => {
+    try {
+        let tracedRequest = await API.get(`/requests/get/${requestId}`);
+
+        dispatch({ type: TRACE_REQUEST, payload: tracedRequest.data[0] });
+    } catch (error) {}
 };

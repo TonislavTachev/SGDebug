@@ -17,10 +17,8 @@ const createAndReadFile = async (filePath, fileName) => {
 
     for await (const line of rl) {
         let parsedJSONLine = JSON.parse(line);
-        if (parsedJSONLine['context'] === 'swagger port') {
-            parsedJSONLine.logFileOrigin = fileName;
-            promises.push(convertToDbFormat(parsedJSONLine));
-        }
+        parsedJSONLine.logFileOrigin = fileName;
+        promises.push(convertToDbFormat(parsedJSONLine));
     }
 
     return Promise.all(promises).then(function (converted) {

@@ -1,8 +1,9 @@
+require('dotenv').config({ path: __dirname + '/.env' });
+
 const express = require('express');
 const app = express();
 
 const { Connection } = require('./MongoConnection');
-require('dotenv').config({ path: __dirname + '/.env' });
 const cors = require('cors');
 const bodyParser = require('body-parser');
 

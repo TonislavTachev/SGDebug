@@ -1,3 +1,4 @@
+const path = require('path');
 const express = require('express');
 const router = express.Router();
 const multer = require('multer');
@@ -5,12 +6,17 @@ const { createAndReadFile, multerStorage, buildSearchParams } = require('../../h
 const upload = multer({ storage: multerStorage });
 const Request = require('../../models/Request');
 
+const workers = require('../../workers');
+
 /* POST upload log files */
 router.post('/upload', upload.array('files', 3), async function(req, res) {
     const uploadedFile = req.files;
-    let result = createAndReadFile(uploadedFile[0].path, uploadedFile[0].originalname);
-    result.then((data) => {
-        res.json({ msg: uploadedFile[0].originalname });
+    res.json({ msg: uploadedFile[0].originalname });
+    workers.dataUpload({
+        fileName: uploadedFile[0].originalname,
+        filePath: uploadedFile[0].path
+    }, function(err, workerResult) {
+        console.log('received worker result', JSON.stringify(workerResult));
     });
 });
 

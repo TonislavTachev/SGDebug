@@ -1,4 +1,4 @@
-import { FETCH_REQUEST, GET_REQUEST, SET_FIELD, DELETE_FILE } from '../actionTypes';
+import { FETCH_REQUEST, GET_REQUEST, SET_FIELD, DELETE_FILE, TRACE_REQUEST } from '../actionTypes';
 import { fromJS } from 'immutable';
 
 const defaultState = fromJS({
@@ -20,7 +20,9 @@ const defaultState = fromJS({
         page: 1,
         perPage: 12,
         totalPages: 0
-    }
+    },
+    tracedRequest: {},
+    isRequestTraced: null
 });
 
 export default function requestReducer(state = defaultState, { type, payload }) {
@@ -40,6 +42,10 @@ export default function requestReducer(state = defaultState, { type, payload }) 
 
         case DELETE_FILE: {
             return state.deleteIn(['fileNames', payload]).set('fileRemoved', true);
+        }
+
+        case TRACE_REQUEST: {
+            return state.set('tracedRequest', payload).set('isRequestTraced', true);
         }
 
         default:

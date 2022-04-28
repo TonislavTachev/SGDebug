@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { makeStyles } from '@mui/styles';
 import EndpointItem from './EndpointItem';
 import { Typography } from '@mui/material';
-import { fetchAllRequests, getRequest } from '../../actions/actions';
+import { fetchAllRequests, getRequest, setField } from '../../actions/actions';
 import { useDispatch, useSelector } from 'react-redux';
 import NoFiles from './NoFiles';
 import SGPagination from '../SGComponents/SGPagination';
@@ -36,6 +36,8 @@ const DataWrapper = () => {
 
     const closeDetailsModal = () => {
         setModalOpen(false);
+        dispatch(setField({ path: ['tracedRequest'], value: {} }));
+        dispatch(setField({ path: ['isRequestTraced'], value: false }));
     };
 
     useEffect(() => {

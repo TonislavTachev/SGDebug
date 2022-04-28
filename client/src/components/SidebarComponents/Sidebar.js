@@ -81,7 +81,10 @@ const Sidebar = ({ setLoading }) => {
         Array.from(filesToUpload).forEach((file, index) => {
             formData.append('files', file);
         });
-        dispatch(uploadFiles(formData));
+        dispatch(uploadFiles(formData)).then(() => {
+            setLoading(false);
+            return dispatch(fetchAllRequests(page, selectedStateChip));
+        });
         setLoading(true);
         setModalOpen(false);
     };
@@ -108,16 +111,16 @@ const Sidebar = ({ setLoading }) => {
 
     useEffect(() => {
         if (filesUploaded === true) {
-            const fetchDocumentsInterval = setInterval(
-                dispatch(fetchAllRequests(page, selectedStateChip)),
-                5000
-            );
+            // const fetchDocumentsInterval = setInterval(
+            //     dispatch(fetchAllRequests(page, selectedStateChip)),
+            //     5000
+            // );
 
-            if (requests.length > 0) {
-                clearInterval(fetchDocumentsInterval);
-                setLoading(false);
-                dispatch(setField({ path: ['filesUploaded'], value: false }));
-            }
+            // if (requests.length > 0) {
+            //     clearInterval(fetchDocumentsInterval);
+            //     setLoading(false);
+            //     dispatch(setField({ path: ['filesUploaded'], value: false }));
+            // }
         }
     }, [filesUploaded, requests]);
 

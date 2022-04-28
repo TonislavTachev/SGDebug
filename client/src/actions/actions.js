@@ -12,9 +12,11 @@ export const uploadFiles = (files) => async (dispatch) => {
         console.log(res.data);
 
         if (res.status === 200) {
-            dispatch({ type: UPLOAD_FILES, payload: res.data.msg });
+            return dispatch({ type: UPLOAD_FILES, payload: res.data.msg });
         }
-    } catch (error) {}
+    } catch (error) {
+        return null;
+    }
 };
 
 export const fetchAllRequests = (pageNumber, requestType) => async (dispatch) => {

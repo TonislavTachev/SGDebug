@@ -36,7 +36,7 @@ const EndpointItem = ({
                     : 'Unknown ';
             }
         } else if (endpoint.mtid === 'request') {
-            return `${endpoint.body.name}`;
+            return `${endpoint?.body?.name || endpoint?.body?.method}`;
         }
     };
 

@@ -1,44 +1,23 @@
 const express = require('express');
 const router = express.Router();
 const Request = require('../../models/Request');
+const { buildSearchParams } = require('../../helpers');
+const {
+    getDistinctRequestAggregationPipeline,
+    fetchAllRequestsPipeline
+} = require('../aggregationHelpers');
 
 /* GET fetch requests data */
 router.post('/fetch', async function (req, res, next) {
     try {
-        let { perPage, pageNumber, requestType } = req.body;
+        let { perPage, pageNumber, requestType, distinctRequestName } = req.body;
 
         var pagination = {
             limit: perPage,
             skip: (pageNumber - 1) * perPage
         };
 
-        let types = {
-            swagger: 'request',
-            error: 'error'
-        };
-
-        let pipeline = [
-            {
-                $match: {
-                    $and: [
-                        {
-                            $or: [{ mtid: types[requestType] }],
-                            ...(requestType === 'error' && { $or: [{ error: { $exists: true } }] }),
-                            ...(requestType === 'swagger' && {
-                                $or: [{ 'body.params.channel': { $eq: 'web' } }]
-                            })
-                        }
-                    ]
-                }
-            },
-            { $sort: { time: 1 } },
-            {
-                $facet: {
-                    data: [{ $skip: pagination.skip }, { $limit: pagination.limit }],
-                    total: [{ $count: 'total' }]
-                }
-            }
-        ];
+        let pipeline = fetchAllRequestsPipeline(requestType, pagination, distinctRequestName);
 
         let data = await Request.aggregate(pipeline);
 
@@ -87,8 +66,8 @@ router.post('/fetch', async function (req, res, next) {
 
         res.json({
             data: data[0].data,
-            // startDate: result[0][0].startDate[0].time,
-            // endDate: result[0][0].endDate[0].time,
+            startDate: data[0].startDate[0].time,
+            endDate: data[0].endDate[0].time,
             fileNames: originalFileNames,
             totalPages: Math.ceil(data[0]?.total[0]?.total / perPage)
         });
@@ -113,31 +92,44 @@ router.get('/get/:trace', async function (req, res) {
 });
 
 router.post('/filter', async function (req, res) {
-    let { perPage, pageNumber, filters } = req.body;
-
-    var pagination = {
-        limit: perPage,
-        skip: perPage * (pageNumber - 1)
-    };
-
-    let dateAndTimeRange = buildSearchParams(filters);
-
     try {
-        let filteredRequests = await Request.aggregate([
-            {
-                $match: {
-                    $and: [
-                        { time: { $gte: ISODate(`${dateAndTimeRange[0]}`) } },
-                        { time: { $lte: ISODate(`${dateAndTimeRange[1]}`) } }
-                    ]
-                }
-            }
-        ]);
+        let { perPage, pageNumber, filters } = req.body;
 
-        res.status(200).json(filteredRequests);
+        var pagination = {
+            limit: perPage,
+            skip: perPage * (pageNumber - 1)
+        };
+
+        let dateAndTimeRange = buildSearchParams(filters);
+
+        dateAndTimeRange.map((i) => console.log(new Date(i)));
+
+        let filteredRequests = await Request.find({
+            time: {
+                $gte: new Date(dateAndTimeRange[0]),
+                $lte: new Date(dateAndTimeRange[1])
+            }
+        });
+
+        console.log(filteredRequests);
+
+        res.json({ result: dateAndTimeRange });
     } catch (error) {
-        res.json(error);
+        console.log(error);
     }
 });
+
+router.post('/filter/methodName', async function (req, res) {
+    let { requestType } = req.body;
+
+    let searchPipeline = getDistinctRequestAggregationPipeline(requestType);
+
+    let results = await Request.aggregate(searchPipeline);
+
+    res.json(results);
+});
+
+// { time: { $gte: ISODate(`${dateAndTimeRange[0]}`) } },
+// { time: { $lte: ISODate(`${dateAndTimeRange[1]}`) } }
 
 module.exports = router;

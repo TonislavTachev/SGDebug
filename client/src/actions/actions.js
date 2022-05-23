@@ -4,7 +4,8 @@ import {
     GET_REQUEST,
     SET_FIELD,
     DELETE_FILE,
-    TRACE_REQUEST
+    TRACE_REQUEST,
+    FETCH_DISTINCT_REQUEST_NAMES
 } from '../actionTypes';
 import API from '../axiosInstance';
 
@@ -24,23 +25,25 @@ export const uploadFiles = (files) => async (dispatch) => {
     } catch (error) {}
 };
 
-export const fetchAllRequests = (pageNumber, requestType) => async (dispatch) => {
-    const pagination = {
-        perPage: 10,
-        pageNumber: pageNumber,
-        requestType
+export const fetchAllRequests =
+    (pageNumber, requestType, distinctRequestName) => async (dispatch) => {
+        const pagination = {
+            perPage: 10,
+            pageNumber: pageNumber,
+            requestType,
+            distinctRequestName
+        };
+
+        try {
+            let res = await API.post('/requests/fetch', pagination, {
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            });
+
+            dispatch({ type: FETCH_REQUEST, payload: res.data });
+        } catch (error) {}
     };
-
-    try {
-        let res = await API.post('/requests/fetch', pagination, {
-            headers: {
-                'Content-Type': 'application/json'
-            }
-        });
-
-        dispatch({ type: FETCH_REQUEST, payload: res.data });
-    } catch (error) {}
-};
 
 export const filterRequests = (filters) => async (dispatch) => {
     const filtersObj = {
@@ -55,6 +58,8 @@ export const filterRequests = (filters) => async (dispatch) => {
                 'Content-Type': 'application/json'
             }
         });
+
+        console.log(res);
     } catch (error) {}
 };
 
@@ -72,6 +77,22 @@ export const removeLogFile = (fileName, fileId) => async (dispatch) => {
         if (res.status === 200) {
             dispatch({ type: DELETE_FILE, payload: fileId });
         }
+    } catch (error) {}
+};
+
+export const fetchDistinctRequestNamesByType = (requestType) => async (dispatch) => {
+    const type = {
+        requestType: requestType
+    };
+    try {
+        let res = await API.post('/requests/filter/methodName', type, {
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        });
+        console.log(res.data);
+
+        dispatch({ type: FETCH_DISTINCT_REQUEST_NAMES, payload: res.data });
     } catch (error) {}
 };
 

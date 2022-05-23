@@ -6,6 +6,7 @@ import ApiIcon from '@mui/icons-material/Api';
 import { makeStyles } from '@mui/styles';
 import { useSelector, useDispatch } from 'react-redux';
 import { setField, fetchAllRequests } from '../../actions/actions';
+import MethodNameInput from '../SidebarComponents/MethodNameInput';
 
 const ChipNavigation = () => {
     const classes = useStyles();
@@ -40,6 +41,9 @@ const ChipNavigation = () => {
                     onClick={() => handleClick('error')}
                     variant={selectedChip === 1 ? 'filled' : 'outlined'}
                 />
+            </div>
+            <div className={classes.timeWrapper}>
+                <MethodNameInput />
             </div>
         </div>
     );

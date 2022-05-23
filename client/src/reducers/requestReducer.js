@@ -1,4 +1,11 @@
-import { FETCH_REQUEST, GET_REQUEST, SET_FIELD, DELETE_FILE, TRACE_REQUEST } from '../actionTypes';
+import {
+    FETCH_REQUEST,
+    GET_REQUEST,
+    SET_FIELD,
+    DELETE_FILE,
+    TRACE_REQUEST,
+    FETCH_DISTINCT_REQUEST_NAMES
+} from '../actionTypes';
 import { fromJS } from 'immutable';
 
 const defaultState = fromJS({
@@ -22,7 +29,9 @@ const defaultState = fromJS({
         totalPages: 0
     },
     tracedRequest: {},
-    isRequestTraced: null
+    isRequestTraced: null,
+    distinctMethodNames: [],
+    selectedDistinctName: { label: '', value: '' }
 });
 
 export default function requestReducer(state = defaultState, { type, payload }) {
@@ -36,8 +45,18 @@ export default function requestReducer(state = defaultState, { type, payload }) 
                 .setIn(['pagination', 'totalPages'], payload.totalPages);
         case GET_REQUEST:
             return state.set('request', payload);
+
         case SET_FIELD: {
             return state.setIn(payload.path, payload.value);
+        }
+
+        case FETCH_DISTINCT_REQUEST_NAMES: {
+            return state.set(
+                'distinctMethodNames',
+                payload.map((item) => {
+                    return { label: item.distinctName, value: item.distinctName };
+                })
+            );
         }
 
         case DELETE_FILE: {

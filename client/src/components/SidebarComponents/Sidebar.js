@@ -19,6 +19,7 @@ import {
 import IsLoadingHoc from '../../customHooks/LoaderHOC';
 import SGSnackbar from '../SGComponents/SGSnackbar';
 import usePrevious from '../../customHooks/prevHook';
+import MethodNameInput from './MethodNameInput';
 
 const Sidebar = ({ setLoading }) => {
     const classes = useStyles();
@@ -39,7 +40,9 @@ const Sidebar = ({ setLoading }) => {
     const selectedStateChip = useSelector(({ requestReducer }) =>
         requestReducer.getIn(['filters', 'types'])
     );
-
+    const selectedMethodName = useSelector(({ requestReducer }) =>
+        requestReducer.get('selectedDistinctName')
+    );
     const prevSelectedChip = usePrevious(selectedStateChip);
 
     const openFileUploadModal = () => {
@@ -99,9 +102,8 @@ const Sidebar = ({ setLoading }) => {
     //     console.log('izvikwam se 2');
 
     //     let dateRangeSelected = requestFilters.get('range').every((item) => item !== null);
-    //     let isTimeEntered = requestFilters.get('time').every((value, key) => value !== '');
 
-    //     if (dateRangeSelected && isTimeEntered) {
+    //     if (dateRangeSelected) {
     //         dispatch(filterRequests(requestFilters));
     //     }
     // }, [requestFilters]);
@@ -133,6 +135,10 @@ const Sidebar = ({ setLoading }) => {
             dispatch(fetchAllRequests(page, selectedStateChip));
         }
     }, [selectedStateChip]);
+
+    useEffect(() => {
+        dispatch(fetchAllRequests(page, selectedStateChip, selectedMethodName));
+    }, [selectedMethodName]);
 
     useEffect(() => {
         dispatch(fetchAllRequests(page, selectedStateChip));

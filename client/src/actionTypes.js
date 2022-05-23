@@ -5,3 +5,4 @@ export const SET_FIELD = 'SET_FIELD';
 export const DELETE_FILE = 'DELETE_FILE';
 export const SET_PAGE = 'SET_PAGE';
 export const TRACE_REQUEST = 'TRACE_REQUEST';
+export const FETCH_DISTINCT_REQUEST_NAMES = 'FETCH_DISTINCT_REQUEST_NAMES';

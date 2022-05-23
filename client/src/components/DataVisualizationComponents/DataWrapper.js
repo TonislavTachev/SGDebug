@@ -22,6 +22,9 @@ const DataWrapper = () => {
     const selectedStateChip = useSelector(({ requestReducer }) =>
         requestReducer.getIn(['filters', 'types'])
     );
+    const selectedMethodName = useSelector(({ requestReducer }) =>
+        requestReducer.get('selectedDistinctName')
+    );
 
     const [isModalOpen, setModalOpen] = useState(false);
 
@@ -41,7 +44,7 @@ const DataWrapper = () => {
     };
 
     useEffect(() => {
-        dispatch(fetchAllRequests(page, selectedStateChip));
+        dispatch(fetchAllRequests(page, selectedStateChip, selectedMethodName));
     }, [page, dispatch]);
 
     return (

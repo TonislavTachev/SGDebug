@@ -4,7 +4,7 @@ import EventIcon from '@mui/icons-material/Event';
 import AccessTimeIcon from '@mui/icons-material/AccessTime';
 import ErrorIcon from '../../assets/icons/error.png';
 import { Typography } from '@mui/material';
-import { format, parseISO } from 'date-fns';
+import { format, parseISO, addMinutes } from 'date-fns';
 import { DATE_FORMAT, TIME_FORMAT } from '../../constants';
 
 const EndpointItem = ({
@@ -19,11 +19,15 @@ const EndpointItem = ({
     const classes = useStyles();
 
     const formatTime = (timeToFormat) => {
-        return `${format(new Date(timeToFormat), TIME_FORMAT)}`;
+        const dt = new Date(timeToFormat);
+        const dtDateOnly = new Date(dt.valueOf() + dt.getTimezoneOffset() * 60 * 1000);
+        return `${format(dtDateOnly, TIME_FORMAT)}`;
     };
 
     const formatDate = (dateToFormat) => {
-        return `${format(new Date(dateToFormat), DATE_FORMAT)}`;
+        const dt = new Date(dateToFormat);
+        const dtDateOnly = new Date(dt.valueOf() + dt.getTimezoneOffset() * 60 * 1000);
+        return `${format(new Date(dtDateOnly), DATE_FORMAT)}`;
     };
 
     const checkEndpointTypeAndGetName = (endpoint) => {

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { makeStyles } from '@mui/styles';
 import SGLogo from '../../assets/logo/download.png';
 import { Typography } from '@mui/material';
@@ -20,6 +20,7 @@ import IsLoadingHoc from '../../customHooks/LoaderHOC';
 import SGSnackbar from '../SGComponents/SGSnackbar';
 import usePrevious from '../../customHooks/prevHook';
 import MethodNameInput from './MethodNameInput';
+import { fromJS } from 'immutable';
 
 const Sidebar = ({ setLoading }) => {
     const classes = useStyles();
@@ -44,6 +45,7 @@ const Sidebar = ({ setLoading }) => {
         requestReducer.get('selectedDistinctName')
     );
     const prevSelectedChip = usePrevious(selectedStateChip);
+    const prevMethodName = usePrevious(selectedMethodName);
 
     const openFileUploadModal = () => {
         setModalOpen(true);
@@ -131,13 +133,22 @@ const Sidebar = ({ setLoading }) => {
     }, [isFileRemoved]);
 
     useEffect(() => {
-        if (prevSelectedChip !== '' && prevSelectedChip !== selectedStateChip) {
-            dispatch(fetchAllRequests(page, selectedStateChip));
+        if (prevSelectedChip !== undefined && prevSelectedChip !== selectedStateChip) {
+            dispatch(fetchAllRequests(1, selectedStateChip));
+            dispatch(
+                setField({
+                    path: ['selectedDistinctName'],
+                    value: fromJS({ label: '', value: '' })
+                })
+            );
+            dispatch(setField({ path: ['pagination', 'page'], value: 1 }));
         }
     }, [selectedStateChip]);
 
     useEffect(() => {
-        dispatch(fetchAllRequests(page, selectedStateChip, selectedMethodName));
+        if (prevMethodName !== undefined) {
+            dispatch(fetchAllRequests(page, selectedStateChip, selectedMethodName));
+        }
     }, [selectedMethodName]);
 
     useEffect(() => {

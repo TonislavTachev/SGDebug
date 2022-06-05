@@ -58,20 +58,23 @@ const buildSearchParams = (frontendParams) => {
     let formattedTime = getTimeFromTimeStamp(timeRange);
 
     let filteredArray = dateRange.map((item, index) => {
-        let timeRange = formattedTime[index === 0 ? 'from' : 'to'];
+        // let timeRange = formattedTime[index === 0 ? 'from' : 'to'];
         let date = format(new Date(item), 'yyyy-MM-dd');
-        let filteredRange = `${date.toString()}${timeRange.toString()}`;
-        console.log(filteredRange);
-        return filteredRange;
+        // const dtDateOnly = new Date(date.valueOf() + date.getTimezoneOffset() * 60 * 1000);
+        // console.log(dtDateOnly);
+        return date;
     });
 
-    return filteredArray;
+    return filteredArray.map((item, index) => ({
+        timeFroм: index === 0 && `${item}${formattedTime['from']}`,
+        timeTo: index === 1 && `${item}${formattedTime['to']}`
+    }));
 };
 
 const getTimeFromTimeStamp = (timeRange) => {
     Object.keys(timeRange).map((key, index) => {
         let date = new Date(timeRange[key]);
-        timeRange[key] = format(date, "'T'HH:mm:ss");
+        timeRange[key] = format(date, "'T'HH:mm:ss.sss'Z'");
     });
 
     return timeRange;

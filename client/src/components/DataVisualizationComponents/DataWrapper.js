@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { makeStyles } from '@mui/styles';
 import EndpointItem from './EndpointItem';
 import { Typography } from '@mui/material';
@@ -10,6 +10,7 @@ import SGModal from '../SGComponents/SGModal';
 import BodyDetailsComponent from './DetailsModal';
 import ChipNavigation from './ChipNavigation';
 import SGSwitch from '../SGComponents/SGSwitch';
+import usePrevious from '../../customHooks/prevHook';
 
 const DataWrapper = () => {
     const dispatch = useDispatch();
@@ -26,10 +27,9 @@ const DataWrapper = () => {
         requestReducer.get('selectedDistinctName')
     );
 
-    const [isModalOpen, setModalOpen] = useState(false);
+    const prevPage = usePrevious(page);
 
-    const [selectedRequest, setSelectedRequest] = useState();
-    const [openBody, setBodyOpenState] = useState(false);
+    const [isModalOpen, setModalOpen] = useState(false);
 
     const fetchRequestAndExpandBody = (id) => {
         let individualRequest = fetchedRequests[id];
@@ -44,8 +44,10 @@ const DataWrapper = () => {
     };
 
     useEffect(() => {
-        dispatch(fetchAllRequests(page, selectedStateChip, selectedMethodName));
-    }, [page, dispatch]);
+        if (prevPage !== undefined) {
+            dispatch(fetchAllRequests(page, selectedStateChip, selectedMethodName));
+        }
+    }, [page]);
 
     return (
         <div className={classes.wrapperContainer}>

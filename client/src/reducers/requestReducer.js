@@ -4,7 +4,8 @@ import {
     SET_FIELD,
     DELETE_FILE,
     TRACE_REQUEST,
-    FETCH_DISTINCT_REQUEST_NAMES
+    FETCH_DISTINCT_REQUEST_NAMES,
+    FETCH_FILTERED_REQUEST
 } from '../actionTypes';
 import { fromJS } from 'immutable';
 
@@ -49,6 +50,9 @@ export default function requestReducer(state = defaultState, { type, payload }) 
         case SET_FIELD: {
             return state.setIn(payload.path, payload.value);
         }
+
+        case FETCH_FILTERED_REQUEST:
+            return state.set('requests', payload);
 
         case FETCH_DISTINCT_REQUEST_NAMES: {
             return state.set(

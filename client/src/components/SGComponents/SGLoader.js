@@ -24,7 +24,8 @@ const useStyles = makeStyles((theme) => ({
 
     loaderTextStyle: {
         fontSize: '18px',
-        color: '#FFF'
+        color: '#FFF',
+        marginTop: '84px !important'
     }
 }));
 

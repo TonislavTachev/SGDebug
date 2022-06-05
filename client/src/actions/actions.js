@@ -5,7 +5,8 @@ import {
     SET_FIELD,
     DELETE_FILE,
     TRACE_REQUEST,
-    FETCH_DISTINCT_REQUEST_NAMES
+    FETCH_DISTINCT_REQUEST_NAMES,
+    FETCH_FILTERED_REQUEST
 } from '../actionTypes';
 import API from '../axiosInstance';
 
@@ -16,8 +17,6 @@ export const uploadFiles = (files) => async (dispatch) => {
                 'Content-Type': 'multipart/form-data'
             }
         });
-
-        console.log(res.data);
 
         if (res.status === 200) {
             dispatch({ type: UPLOAD_FILES, payload: res.data.msg });
@@ -41,7 +40,7 @@ export const fetchAllRequests =
                 }
             });
 
-            dispatch({ type: FETCH_REQUEST, payload: res.data });
+            dispatch({ type: FETCH_REQUEST, payload: res.data, request: 'requests/fetch' });
         } catch (error) {}
     };
 
@@ -53,13 +52,13 @@ export const filterRequests = (filters) => async (dispatch) => {
     };
 
     try {
-        let res = await API.post('/requests/filter', filtersObj, {
+        const res = await API.post('/requests/filter', filtersObj, {
             headers: {
                 'Content-Type': 'application/json'
             }
         });
 
-        console.log(res);
+        dispatch({ type: FETCH_FILTERED_REQUEST, payload: res.result });
     } catch (error) {}
 };
 

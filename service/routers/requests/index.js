@@ -102,18 +102,17 @@ router.post('/filter', async function (req, res) {
 
         let dateAndTimeRange = buildSearchParams(filters);
 
-        dateAndTimeRange.map((i) => console.log(new Date(i)));
-
         let filteredRequests = await Request.find({
             time: {
-                $gte: new Date(dateAndTimeRange[0]),
-                $lte: new Date(dateAndTimeRange[1])
-            }
-        });
+                $gte: dateAndTimeRange[0].timeFroм,
+                $lt: dateAndTimeRange[1].timeTo
+            },
+            mtid: 'request'
+        })
+            .skip(pagination.skip)
+            .limit(pagination.limit);
 
-        console.log(filteredRequests);
-
-        res.json({ result: dateAndTimeRange });
+        res.json({ result: filteredRequests });
     } catch (error) {
         console.log(error);
     }

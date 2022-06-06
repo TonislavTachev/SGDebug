@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef, useMemo } from 'react';
 import { TextField, Typography } from '@mui/material';
 import { makeStyles } from '@mui/styles';
 import TimePicker from '@mui/lab/TimePicker';
@@ -14,6 +14,12 @@ const TimeComponent = () => {
 
     const timeRangeFilter = useSelector(({ requestReducer }) => requestReducer.get('filters'));
     const [isDateSelected, setSelectDate] = useState(false);
+    const timePickerFromRef = useRef();
+    const timePickerToRef = useRef();
+    const allNull = useMemo(
+        () => timeRangeFilter.get('range').some((item) => item === null),
+        [timeRangeFilter]
+    );
 
     const dispatch = useDispatch();
 
@@ -25,6 +31,16 @@ const TimeComponent = () => {
             setSelectDate(false);
         }
     }, [timeRangeFilter]);
+
+    useEffect(() => {
+        if (allNull) {
+            if (timePickerFromRef.current !== undefined && timePickerToRef !== undefined) {
+                // timePickerFromRef.current.input.value = '';
+                // timePickerToRef.current.input.value = '';
+                console.log(timePickerFromRef.current.input);
+            }
+        }
+    }, [allNull]);
 
     const setTimeRange = (time, key) => {
         const timeToSave = {
@@ -47,7 +63,9 @@ const TimeComponent = () => {
                     )
             }
         };
-        let isDateValid = new Date(time) !== 'Invalid Date' && !isNaN(new Date(time));
+
+        let isDateValid =
+            new Date(time) !== 'Invalid Date' && !isNaN(new Date(time)) && time !== null;
 
         if (isDateValid) {
             timeToSave[key].action(time);
@@ -70,6 +88,7 @@ const TimeComponent = () => {
                             <TextField
                                 {...props}
                                 className={classes.root}
+                                inputRef={timePickerFromRef}
                                 placeholder='Time from'
                             />
                         )}
@@ -90,7 +109,12 @@ const TimeComponent = () => {
                         placeholder=''
                         disableOpenPicker
                         renderInput={(params) => (
-                            <TextField {...params} className={classes.root} placeholder='Time to' />
+                            <TextField
+                                {...params}
+                                inputRef={timePickerToRef}
+                                className={classes.root}
+                                placeholder='Time to'
+                            />
                         )}
                         disabled={!isDateSelected}
                     />

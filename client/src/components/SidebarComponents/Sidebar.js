@@ -14,7 +14,8 @@ import {
     filterRequests,
     fetchAllRequests,
     removeLogFile,
-    setField
+    setField,
+    clearFilters
 } from '../../actions/actions';
 import IsLoadingHoc from '../../customHooks/LoaderHOC';
 import SGSnackbar from '../SGComponents/SGSnackbar';
@@ -100,15 +101,28 @@ const Sidebar = ({ setLoading }) => {
         setSnackbarState(false);
     };
 
-    // useEffect(() => {
-    //     console.log('izvikwam se 2');
+    const dateRangeSelected = useMemo(
+        () => requestFilters.get('range').every((item) => item !== null),
+        [requestFilters]
+    );
 
-    //     let dateRangeSelected = requestFilters.get('range').every((item) => item !== null);
+    useEffect(() => {
+        if (
+            requestFilters.get('time').get('from') &&
+            requestFilters.get('time').get('to') &&
+            dateRangeSelected
+        ) {
+            const timerId = setTimeout(() => {
+                dispatch(
+                    fetchAllRequests(page, selectedStateChip, selectedMethodName, requestFilters)
+                );
+            }, 1000);
 
-    //     if (dateRangeSelected) {
-    //         dispatch(filterRequests(requestFilters));
-    //     }
-    // }, [requestFilters]);
+            return () => {
+                clearTimeout(timerId);
+            };
+        }
+    }, [dateRangeSelected, requestFilters.get('time')]);
 
     useEffect(() => {
         if (filesUploaded === true) {
@@ -134,6 +148,7 @@ const Sidebar = ({ setLoading }) => {
 
     useEffect(() => {
         if (prevSelectedChip !== undefined && prevSelectedChip !== selectedStateChip) {
+            dispatch(clearFilters());
             dispatch(fetchAllRequests(1, selectedStateChip));
             dispatch(
                 setField({

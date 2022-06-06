@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { TextField } from '@mui/material';
 import DatePicker from '@mui/lab/DesktopDatePicker';
 import DateRangePicker from '@mui/lab/DateRangePicker';
@@ -10,19 +10,15 @@ import { useSelector, useDispatch } from 'react-redux';
 import { setField } from '../../actions/actions';
 import { format, parseISO } from 'date-fns';
 import { DATE_FORMAT } from '../../constants';
-import { useEffect } from 'react';
 
 const SGCalendar = () => {
-    const startDate = useSelector(({ requestReducer }) => requestReducer.get('startDate'));
-    const endDate = useSelector(({ requestReducer }) => requestReducer.get('endDate'));
     const DateRangeFilter = useSelector(({ requestReducer }) => requestReducer.get('filters'));
+    const resetValues = useMemo(
+        () => DateRangeFilter.get('range').every((item) => item === null),
+        [DateRangeFilter.get('range')]
+    );
 
     const dispatch = useDispatch();
-
-    const [value, setValue] = React.useState([
-        DateRangeFilter.getIn(['range', 0]),
-        DateRangeFilter.getIn(['range', 1])
-    ]);
 
     const classes = useStyles();
 
@@ -30,7 +26,7 @@ const SGCalendar = () => {
         <LocalizationProvider dateAdapter={AdapterDateFns} locale={enLocale}>
             <DateRangePicker
                 calendars={1}
-                value={value}
+                value={[DateRangeFilter.getIn(['range', 0]), DateRangeFilter.getIn(['range', 1])]}
                 startText='Select Date range'
                 // minDate={startDate !== null && new Date(startDate)}
                 // maxDate={endDate !== null && new Date(endDate)}

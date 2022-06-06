@@ -10,14 +10,19 @@ const {
 /* GET fetch requests data */
 router.post('/fetch', async function (req, res, next) {
     try {
-        let { perPage, pageNumber, requestType, distinctRequestName } = req.body;
+        let { perPage, pageNumber, requestType, distinctRequestName, filters } = req.body;
 
         var pagination = {
             limit: perPage,
             skip: (pageNumber - 1) * perPage
         };
 
-        let pipeline = fetchAllRequestsPipeline(requestType, pagination, distinctRequestName);
+        let pipeline = fetchAllRequestsPipeline(
+            requestType,
+            pagination,
+            distinctRequestName,
+            filters
+        );
 
         let data = await Request.aggregate(pipeline);
 

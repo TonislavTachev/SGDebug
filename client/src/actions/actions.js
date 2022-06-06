@@ -6,7 +6,8 @@ import {
     DELETE_FILE,
     TRACE_REQUEST,
     FETCH_DISTINCT_REQUEST_NAMES,
-    FETCH_FILTERED_REQUEST
+    FETCH_FILTERED_REQUEST,
+    CLEAR_FILTERS
 } from '../actionTypes';
 import API from '../axiosInstance';
 
@@ -25,12 +26,13 @@ export const uploadFiles = (files) => async (dispatch) => {
 };
 
 export const fetchAllRequests =
-    (pageNumber, requestType, distinctRequestName) => async (dispatch) => {
+    (pageNumber, requestType, distinctRequestName, filters) => async (dispatch) => {
         const pagination = {
             perPage: 10,
             pageNumber: pageNumber,
             requestType,
-            distinctRequestName
+            distinctRequestName,
+            filters
         };
 
         try {
@@ -89,7 +91,6 @@ export const fetchDistinctRequestNamesByType = (requestType) => async (dispatch)
                 'Content-Type': 'application/json'
             }
         });
-        console.log(res.data);
 
         dispatch({ type: FETCH_DISTINCT_REQUEST_NAMES, payload: res.data });
     } catch (error) {}
@@ -109,4 +110,8 @@ export const traceRequestId = (requestId) => async (dispatch) => {
 
         dispatch({ type: TRACE_REQUEST, payload: tracedRequest.data[0] });
     } catch (error) {}
+};
+
+export const clearFilters = () => async (dispatch) => {
+    dispatch({ type: CLEAR_FILTERS });
 };

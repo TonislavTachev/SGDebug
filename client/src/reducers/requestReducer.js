@@ -5,9 +5,10 @@ import {
     DELETE_FILE,
     TRACE_REQUEST,
     FETCH_DISTINCT_REQUEST_NAMES,
-    FETCH_FILTERED_REQUEST
+    FETCH_FILTERED_REQUEST,
+    CLEAR_FILTERS
 } from '../actionTypes';
-import { fromJS } from 'immutable';
+import { fromJS, Map } from 'immutable';
 
 const defaultState = fromJS({
     requests: [],
@@ -69,6 +70,13 @@ export default function requestReducer(state = defaultState, { type, payload }) 
 
         case TRACE_REQUEST: {
             return state.set('tracedRequest', payload).set('isRequestTraced', true);
+        }
+
+        case CLEAR_FILTERS: {
+            return state
+                .setIn(['filters', 'range'], [null, null])
+                .setIn(['filters', 'time', 'from'], '')
+                .setIn(['filters', 'time', 'to'], '');
         }
 
         default:

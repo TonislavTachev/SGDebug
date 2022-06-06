@@ -26,6 +26,7 @@ const DataWrapper = () => {
     const selectedMethodName = useSelector(({ requestReducer }) =>
         requestReducer.get('selectedDistinctName')
     );
+    const requestFilters = useSelector(({ requestReducer }) => requestReducer.get('filters'));
 
     const prevPage = usePrevious(page);
 
@@ -45,7 +46,7 @@ const DataWrapper = () => {
 
     useEffect(() => {
         if (prevPage !== undefined) {
-            dispatch(fetchAllRequests(page, selectedStateChip, selectedMethodName));
+            dispatch(fetchAllRequests(page, selectedStateChip, selectedMethodName, requestFilters));
         }
     }, [page]);
 

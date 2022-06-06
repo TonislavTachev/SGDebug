@@ -1,3 +1,5 @@
+const { buildSearchParams } = require('../helpers');
+
 const getDistinctRequestAggregationPipeline = (requestType) => {
     let types = {
         swagger: 'request',
@@ -44,7 +46,7 @@ const getDistinctRequestAggregationPipeline = (requestType) => {
     }
 };
 
-const fetchAllRequestsPipeline = (requestType, pagination, distinctMethodNames) => {
+const fetchAllRequestsPipeline = (requestType, pagination, distinctMethodNames, filters) => {
     let types = {
         swagger: 'request',
         error: 'error'
@@ -56,6 +58,19 @@ const fetchAllRequestsPipeline = (requestType, pagination, distinctMethodNames) 
         error: [{ error: { $exists: true } }]
     };
 
+    let dateAndTimeRange = [];
+    let timePipeline = {};
+
+    if (filters !== undefined) {
+        dateAndTimeRange = buildSearchParams(filters);
+        timePipeline = {
+            time: {
+                $gte: dateAndTimeRange[0].timeFroм,
+                $lt: dateAndTimeRange[1].timeTo
+            }
+        };
+    }
+
     if (distinctMethodNames === undefined || distinctMethodNames.value === '') {
         return [
             {
@@ -63,7 +78,15 @@ const fetchAllRequestsPipeline = (requestType, pagination, distinctMethodNames) 
                     $and: [
                         {
                             $or: [{ mtid: types[requestType] }],
-                            $or: typesPipeline[requestType]
+                            $or: typesPipeline[requestType],
+                            ...(filters !== undefined
+                                ? {
+                                      time: {
+                                          $gte: dateAndTimeRange[0].timeFroм,
+                                          $lt: dateAndTimeRange[1].timeTo
+                                      }
+                                  }
+                                : {})
                         }
                     ]
                 }

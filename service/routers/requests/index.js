@@ -6,6 +6,7 @@ const {
     getDistinctRequestAggregationPipeline,
     fetchAllRequestsPipeline
 } = require('../aggregationHelpers');
+const { CustomError } = require('../../errorHandler/CustomError');
 
 /* GET fetch requests data */
 router.post('/fetch', async function (req, res, next) {
@@ -71,14 +72,13 @@ router.post('/fetch', async function (req, res, next) {
 
         res.json({
             data: data[0].data,
-            startDate: data[0].startDate[0].time,
-            endDate: data[0].endDate[0].time,
             fileNames: originalFileNames,
             totalPages: Math.ceil(data[0]?.total[0]?.total / perPage)
         });
     } catch (error) {
         console.log(error);
-        res.status(500);
+        const newError = new CustomError('Cannot aggregate data with given parameteres', 500);
+        res.status(404).json({ msg: newError.buildErrorMessage() });
     }
 });
 

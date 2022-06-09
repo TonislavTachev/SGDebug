@@ -38,6 +38,7 @@ const Sidebar = ({ setLoading }) => {
     const requestFilters = useSelector(({ requestReducer }) => requestReducer.get('filters'));
     const requests = useSelector(({ requestReducer }) => requestReducer.get('requests'));
     const isFileRemoved = useSelector(({ requestReducer }) => requestReducer.get('fileRemoved'));
+    const isError = useSelector(({ requestReducer }) => requestReducer.get('errorState'));
     const page = useSelector(({ requestReducer }) => requestReducer.getIn(['pagination', 'page']));
     const selectedStateChip = useSelector(({ requestReducer }) =>
         requestReducer.getIn(['filters', 'types'])
@@ -45,6 +46,8 @@ const Sidebar = ({ setLoading }) => {
     const selectedMethodName = useSelector(({ requestReducer }) =>
         requestReducer.get('selectedDistinctName')
     );
+    const isLoading = useSelector(({ requestReducer }) => requestReducer.get('isLoading'));
+
     const prevSelectedChip = usePrevious(selectedStateChip);
     const prevMethodName = usePrevious(selectedMethodName);
 
@@ -170,8 +173,19 @@ const Sidebar = ({ setLoading }) => {
         dispatch(fetchAllRequests(page, selectedStateChip));
     }, []);
 
+    useEffect(() => {
+        if (isLoading !== undefined || isLoading !== null) {
+            setLoading(true);
+        }
+
+        if (isLoading === false) {
+            setLoading(false);
+        }
+    }, [isLoading]);
+
     return (
         <div className={classes.wrapperContainer}>
+            {isError !== '' && <SGSnackbar open severity='error' message={isError} />}
             {isFileRemoved && (
                 <SGSnackbar
                     open={snackBarState}

@@ -59,16 +59,14 @@ const fetchAllRequestsPipeline = (requestType, pagination, distinctMethodNames, 
     };
 
     let dateAndTimeRange = [];
-    let timePipeline = {};
 
-    if (filters !== undefined) {
+    if (
+        filters !== undefined &&
+        filters.range.every((item) => item !== null) &&
+        filters.time.from !== '' &&
+        filters.to !== ''
+    ) {
         dateAndTimeRange = buildSearchParams(filters);
-        timePipeline = {
-            time: {
-                $gte: dateAndTimeRange[0].timeFroм,
-                $lt: dateAndTimeRange[1].timeTo
-            }
-        };
     }
 
     if (distinctMethodNames === undefined || distinctMethodNames.value === '') {
@@ -79,7 +77,10 @@ const fetchAllRequestsPipeline = (requestType, pagination, distinctMethodNames, 
                         {
                             $or: [{ mtid: types[requestType] }],
                             $or: typesPipeline[requestType],
-                            ...(filters !== undefined
+                            ...(filters !== undefined &&
+                            filters.range.every((item) => item !== null) &&
+                            filters.time.from !== '' &&
+                            filters.to !== ''
                                 ? {
                                       time: {
                                           $gte: dateAndTimeRange[0].timeFroм,
@@ -116,7 +117,18 @@ const fetchAllRequestsPipeline = (requestType, pagination, distinctMethodNames, 
                             $or: typesPipeline[requestType]
                         }
                     ],
-                    ...distinctTypesPipelines[requestType]
+                    ...distinctTypesPipelines[requestType],
+                    ...(filters !== undefined &&
+                    filters.range.every((item) => item !== null) &&
+                    filters.time.from !== '' &&
+                    filters.to !== ''
+                        ? {
+                              time: {
+                                  $gte: dateAndTimeRange[0].timeFroм,
+                                  $lt: dateAndTimeRange[1].timeTo
+                              }
+                          }
+                        : {})
                 }
             },
             { $sort: { time: 1 } },

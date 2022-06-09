@@ -7,7 +7,11 @@ import {
     TRACE_REQUEST,
     FETCH_DISTINCT_REQUEST_NAMES,
     FETCH_FILTERED_REQUEST,
-    CLEAR_FILTERS
+    CLEAR_FILTERS,
+    DISPLAY_ERROR,
+    CLEAR_ERROR,
+    SET_LOADING,
+    CLEAR_LOADING
 } from '../actionTypes';
 import API from '../axiosInstance';
 
@@ -35,6 +39,8 @@ export const fetchAllRequests =
             filters
         };
 
+        dispatch({ type: SET_LOADING });
+
         try {
             let res = await API.post('/requests/fetch', pagination, {
                 headers: {
@@ -43,7 +49,13 @@ export const fetchAllRequests =
             });
 
             dispatch({ type: FETCH_REQUEST, payload: res.data, request: 'requests/fetch' });
-        } catch (error) {}
+        } catch (error) {
+            dispatch({ type: DISPLAY_ERROR, payload: error.response.data.msg });
+
+            setTimeout(() => {
+                dispatch({ type: CLEAR_ERROR });
+            }, 4000);
+        }
     };
 
 export const filterRequests = (filters) => async (dispatch) => {
@@ -114,4 +126,12 @@ export const traceRequestId = (requestId) => async (dispatch) => {
 
 export const clearFilters = () => async (dispatch) => {
     dispatch({ type: CLEAR_FILTERS });
+};
+
+export const setLoadingState = () => async (dispatch) => {
+    dispatch({ type: SET_LOADING });
+};
+
+export const clearLoadingState = () => async (dispatch) => {
+    dispatch({ type: CLEAR_LOADING });
 };

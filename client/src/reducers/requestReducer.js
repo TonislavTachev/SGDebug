@@ -6,7 +6,11 @@ import {
     TRACE_REQUEST,
     FETCH_DISTINCT_REQUEST_NAMES,
     FETCH_FILTERED_REQUEST,
-    CLEAR_FILTERS
+    CLEAR_FILTERS,
+    DISPLAY_ERROR,
+    CLEAR_ERROR,
+    SET_LOADING,
+    CLEAR_LOADING
 } from '../actionTypes';
 import { fromJS, Map } from 'immutable';
 
@@ -33,7 +37,9 @@ const defaultState = fromJS({
     tracedRequest: {},
     isRequestTraced: null,
     distinctMethodNames: [],
-    selectedDistinctName: { label: '', value: '' }
+    selectedDistinctName: { label: '', value: '' },
+    errorState: '',
+    isLoading: false
 });
 
 export default function requestReducer(state = defaultState, { type, payload }) {
@@ -44,7 +50,8 @@ export default function requestReducer(state = defaultState, { type, payload }) 
                 .set('startDate', payload.startDate)
                 .set('endDate', payload.endDate)
                 .set('fileNames', payload.fileNames)
-                .setIn(['pagination', 'totalPages'], payload.totalPages);
+                .setIn(['pagination', 'totalPages'], payload.totalPages)
+                .set('isLoading', false);
         case GET_REQUEST:
             return state.set('request', payload);
 
@@ -77,6 +84,22 @@ export default function requestReducer(state = defaultState, { type, payload }) 
                 .setIn(['filters', 'range'], [null, null])
                 .setIn(['filters', 'time', 'from'], '')
                 .setIn(['filters', 'time', 'to'], '');
+        }
+
+        case DISPLAY_ERROR: {
+            return state.set('errorState', payload);
+        }
+
+        case CLEAR_ERROR: {
+            return state.set('errorState', '');
+        }
+
+        case SET_LOADING: {
+            return state.set('isLoading', true);
+        }
+
+        case CLEAR_LOADING: {
+            return state.set('isLoading', false);
         }
 
         default:

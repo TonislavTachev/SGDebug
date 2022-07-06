@@ -91,7 +91,12 @@ export default function requestReducer(state = defaultState, { type, payload }) 
         }
 
         case CLEAR_ERROR: {
-            return state.set('errorState', '');
+            return state
+                .set('errorState', '')
+                .set('isLoading', false)
+                .setIn(['filters', 'range'], [null, null])
+                .setIn(['filters', 'time', 'from'], '')
+                .setIn(['filters', 'time', 'to'], '');
         }
 
         case SET_LOADING: {

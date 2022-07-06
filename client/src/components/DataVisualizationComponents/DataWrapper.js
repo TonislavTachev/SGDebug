@@ -52,7 +52,7 @@ const DataWrapper = () => {
 
     return (
         <div className={classes.wrapperContainer}>
-            {fetchedRequests.size < 1 ? (
+            {fetchedRequests.length < 1 ? (
                 <NoFiles />
             ) : (
                 <div className={classes.dataWrapper}>

@@ -13,12 +13,15 @@ const TimeComponent = () => {
     const classes = useStyles();
 
     const timeRangeFilter = useSelector(({ requestReducer }) => requestReducer.get('filters'));
+    const timeRange = useSelector(({ requestReducer }) =>
+        requestReducer.getIn(['filters', 'time'])
+    );
     const [isDateSelected, setSelectDate] = useState(false);
     const timePickerFromRef = useRef();
     const timePickerToRef = useRef();
     const allNull = useMemo(
-        () => timeRangeFilter.get('range').some((item) => item === null),
-        [timeRangeFilter]
+        () => timeRange.get('from') === '' && timeRange.get('to') === '',
+        [timeRange]
     );
 
     const dispatch = useDispatch();
@@ -34,11 +37,8 @@ const TimeComponent = () => {
 
     useEffect(() => {
         if (allNull) {
-            if (timePickerFromRef.current !== undefined && timePickerToRef !== undefined) {
-                // timePickerFromRef.current.input.value = '';
-                // timePickerToRef.current.input.value = '';
-                console.log(timePickerFromRef.current.input);
-            }
+            timePickerFromRef.current.value = '';
+            timePickerToRef.current.value = '';
         }
     }, [allNull]);
 

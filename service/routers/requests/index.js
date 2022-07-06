@@ -33,42 +33,17 @@ router.post('/fetch', async function (req, res, next) {
             { $project: { _id: 0 } }
         ]);
 
-        let result = await Promise.all([data, originalFileNames]);
+        await Promise.all([data, originalFileNames]);
 
-        // let converted = await Request.aggregate([
-        //     {
-        //         $project: {
-        //             meta: {
-        //                 $getField: {
-        //                     field: { $literal: '$meta' },
-        //                     input: '$$ROOT'
-        //                 }
-        //             },
-        //             doc: '$$ROOT',
-        //             time: {
-        //                 $toDate: '$time'
-        //             }
-        //         }
-        //     },
+        let filtersSupplied =
+            filters !== undefined &&
+            filters.range.every((item) => item !== null) &&
+            filters.time.from !== '' &&
+            filters.to !== '';
 
-        //     {
-        //         $group: {
-        //             _id: '$meta.trace',
-        //             count: { $count: {} },
-        //             requests: {
-        //                 $push: '$doc'
-        //             }
-        //         }
-        //     },
-        //
-        //     {
-        //         $facet: {
-        //             data: [{ $skip: pagination.skip }, { $limit: pagination.limit }],
-        //             startDate: [{ $sort: { time: 1 } }, { $limit: 1 }],
-        //             endDate: [{ $sort: { time: -1 } }, { $limit: 1 }]
-        //         }
-        //     }
-        // ]);
+        if (filtersSupplied && data[0].data.length === 0) {
+            return res.status(404).json({ msg: 'Cannot aggregate data with given parameteres' });
+        }
 
         res.json({
             data: data[0].data,

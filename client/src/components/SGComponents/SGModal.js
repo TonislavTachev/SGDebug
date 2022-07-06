@@ -46,7 +46,9 @@ const SGModal = ({
                             {dialogFullScreenTitle.body &&
                             dialogFullScreenTitle.body.hasOwnProperty('method')
                                 ? dialogFullScreenTitle.body.method
-                                : 'No method name'}
+                                : dialogFullScreenTitle.mtid === 'error'
+                                ? dialogFullScreenTitle.jsException.type
+                                : 'Undefined'}
                         </Typography>
                     </Toolbar>
                 </AppBar>

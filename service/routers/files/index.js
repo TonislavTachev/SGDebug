@@ -6,7 +6,7 @@ const upload = multer({ storage: multerStorage });
 const Request = require('../../models/Request');
 
 /* POST upload log files */
-router.post('/upload', upload.array('files', 3), async function(req, res) {
+router.post('/upload', upload.array('files', 3), async function (req, res) {
     const uploadedFile = req.files;
     let result = createAndReadFile(uploadedFile[0].path, uploadedFile[0].originalname);
     result.then((data) => {
@@ -15,11 +15,11 @@ router.post('/upload', upload.array('files', 3), async function(req, res) {
 });
 
 /* POST delete file */
-router.post('/delete', async function(req, res) {
+router.post('/delete', async function (req, res) {
     const { fileName } = req.body;
 
     try {
-        await Request.remove({ logFileOrigin: fileName });
+        await Request.deleteMany({ logFileOrigin: fileName });
 
         res.status(200).json({ msg: 'Successfully removed file' });
     } catch (error) {}
